@@ -1,0 +1,55 @@
+package io.github.LoucterSo.task_tracker_backend.entity;
+
+import jakarta.persistence.*;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "users")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
+@ToString
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @Column(nullable = false)
+    private String password;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private boolean enabled = false;
+
+    @JoinColumn
+    @OneToMany(targetEntity = Authority.class, fetch = FetchType.EAGER,
+            cascade = CascadeType.ALL)
+    private Set<Authority> authorities = new HashSet<>();
+
+    @CreationTimestamp
+    @Column(name = "created_time", nullable = false)
+    private Timestamp created;
+
+    @UpdateTimestamp
+    @Column(name = "updated_time", nullable = false)
+    private Timestamp updated;
+
+    public void addRole(Authority authority) {
+        authorities.add(authority);
+    }
+}
