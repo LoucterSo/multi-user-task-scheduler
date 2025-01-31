@@ -11,11 +11,9 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@EqualsAndHashCode(of = "id")
-@ToString
+@Builder @Data
+@NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(of = "id") @ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -51,5 +49,9 @@ public class User {
 
     public void addRole(Authority authority) {
         authorities.add(authority);
+    }
+
+    public Set<Authority> getAuthorities() {
+        return new HashSet<>(authorities);
     }
 }
