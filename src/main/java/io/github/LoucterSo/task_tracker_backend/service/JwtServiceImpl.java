@@ -3,9 +3,11 @@ package io.github.LoucterSo.task_tracker_backend.service;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
 import java.util.Optional;
 import java.util.function.Function;
@@ -16,10 +18,10 @@ public class JwtServiceImpl implements JwtService {
     private final SecretKey signingKey;
 
     public JwtServiceImpl(
-            @Value("${jwt.access.secret}") SecretKey signingKey,
+            @Value("${jwt.access.secret}") String secret,
             @Value("${jwt.access.lifetime}") int expireTimeForAccess) {
         this.expireTimeForAccess = expireTimeForAccess;
-        this.signingKey = signingKey;
+        this.signingKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
     @Override
@@ -28,7 +30,7 @@ public class JwtServiceImpl implements JwtService {
                 .subject(user.getEmail())
                 .issuedAt(new Date())
                 .expiration(createExpireTimeForAccess())
-                .signWith(signingKey)
+                .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
