@@ -51,7 +51,6 @@ public class JwtServiceImpl implements JwtService {
         return claimsFunction.apply(claims);
     }
 
-
     private Date createExpireTimeForAccess() {
         return new Date(System.currentTimeMillis() + expireTimeForAccess);
     }
