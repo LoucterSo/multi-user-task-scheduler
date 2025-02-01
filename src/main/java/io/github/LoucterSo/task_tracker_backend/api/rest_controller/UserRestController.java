@@ -6,36 +6,32 @@ import io.github.LoucterSo.task_tracker_backend.form.AuthResponseData;
 import io.github.LoucterSo.task_tracker_backend.form.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.service.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.RedirectStrategy;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.io.IOException;
 import java.util.HashSet;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-public class UserController {
+public class UserRestController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final RedirectStrategy redirectStrategy;
-    private final AuthenticationProvider authenticationProvider;
 
     @PostMapping(value = "/user")
     public ResponseEntity<AuthResponseData> signup(@RequestBody SignupForm signupForm) {
-        final String email = signupForm.email();
+        final String email = signupForm.getEmail();
 
         if (userService.existsByEmail(email))
             return  ResponseEntity
@@ -43,11 +39,11 @@ public class UserController {
                     .body(AuthResponseData.builder()
                             .message("This email is already taken").build());
 
-        final String password = passwordEncoder.encode(signupForm.password());
+        final String password = passwordEncoder.encode(signupForm.getPassword());
 
         User user = User.builder()
-                .firstName(signupForm.firstName())
-                .lastName(signupForm.lastName())
+                .firstName(signupForm.getFirstName())
+                .lastName(signupForm.getLastName())
                 .email(email)
                 .password(password)
                 .authorities(new HashSet<>())
@@ -71,10 +67,29 @@ public class UserController {
                         .build());
     }
 
-    @GetMapping("/private")
-    public String privateS() {
+    @PostMapping(value = "/auth/login")
+    public ResponseEntity<AuthResponseData> login(@RequestBody SignupForm signupForm) {
+        final String email = signupForm.getEmail();
+        final String password = signupForm.getPassword();
 
-        return "private";
+        Optional<User> user = userService.findByEmail(email);
+
+        if (user.isEmpty() || !passwordEncoder.matches(password, user.get().getPassword())) {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED)
+                    .body(AuthResponseData.builder()
+                            .message("User with wrong email or password")
+                            .build());
+        }
+
+        String jwtAccess = jwtService.generateAccessToken(user.get());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(AuthResponseData.builder()
+                        .message("Success")
+                        .accessToken(jwtAccess)
+                        .build());
     }
 
 }
