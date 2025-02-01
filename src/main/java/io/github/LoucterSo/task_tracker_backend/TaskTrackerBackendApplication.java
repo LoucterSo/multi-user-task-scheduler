@@ -22,32 +22,30 @@ public class TaskTrackerBackendApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(UserRepository userRepository,
-                                               AuthorityRepository authorityRepository,
-                                               PasswordEncoder encoder) {
+    public CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder encoder) {
 
         return runner -> {
+            userRepository.deleteAll();
 
-            if (!userRepository.existsByEmail("loucterso@gmail.com")) {
-                User admin = User.builder()
-                        .firstName("admin")
-                        .lastName("admin")
-                        .email("loucterso@gmail.com")
-                        .password(encoder.encode("123"))
-                        .authorities(new HashSet<>())
-                        .enabled(true)
-                        .build();
+            User admin = User.builder()
+                    .firstName("admin")
+                    .lastName("admin")
+                    .email("loucterso@gmail.com")
+                    .password(encoder.encode("123"))
+                    .authorities(new HashSet<>())
+                    .enabled(true)
+                    .build();
 
-                Authority adminAuthority = new Authority();
-                adminAuthority.setRole(Authority.Roles.ADMIN);
-                admin.addRole(adminAuthority);
+            Authority adminAuthority = new Authority();
+            adminAuthority.setRole(Authority.Roles.ADMIN);
+            admin.addRole(adminAuthority);
 
-                Authority userAuthority = new Authority();
-                adminAuthority.setRole(Authority.Roles.USER);
-                admin.addRole(userAuthority);
+            Authority userAuthority = new Authority();
+            adminAuthority.setRole(Authority.Roles.USER);
+            admin.addRole(userAuthority);
 
-                userRepository.save(admin);
-            }
+            userRepository.save(admin);
+
         };
     }
 
