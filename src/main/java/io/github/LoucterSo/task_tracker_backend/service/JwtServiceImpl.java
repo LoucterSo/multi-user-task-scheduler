@@ -15,13 +15,13 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JwtService {
     private final int expireTimeForAccess;
-    private final int expireTimeForRefresh;
+    private final long expireTimeForRefresh;
     private final SecretKey signingKey;
 
     public JwtServiceImpl(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access.lifetime}") int expireTimeForAccess,
-            @Value("${jwt.refresh.lifetime}") int expireTimeForRefresh) {
+            @Value("${jwt.refresh.lifetime}") long expireTimeForRefresh) {
         this.expireTimeForRefresh = expireTimeForRefresh;
         this.expireTimeForAccess = expireTimeForAccess;
         this.signingKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
@@ -37,6 +37,7 @@ public class JwtServiceImpl implements JwtService {
                 .compact();
     }
 
+    @Override
     public String generateRefreshToken(User user) {
         return Jwts.builder()
                 .subject(user.getEmail())
@@ -49,6 +50,11 @@ public class JwtServiceImpl implements JwtService {
     @Override
     public Optional<String> getSubjectFromToken(String token) {
         return Optional.ofNullable(getClaim(token, Claims::getSubject));
+    }
+
+    @Override
+    public Date getExpFromToken(String token) {
+        return getClaim(token, Claims::getExpiration);
     }
 
     private Claims getAllClaims(String jwt) {

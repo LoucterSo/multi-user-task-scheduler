@@ -7,7 +7,9 @@ import io.github.LoucterSo.task_tracker_backend.form.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.service.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.UserServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +31,7 @@ public class AuthRestController {
     @PostMapping(value = "/signup")
     public ResponseEntity<AuthResponseForm> signup(
             @Valid @RequestBody SignupForm signupForm,
+            HttpServletResponse response,
             BindingResult validationResult
     ) {
 
@@ -65,6 +68,14 @@ public class AuthRestController {
         userServiceImpl.saveUser(user);
 
         String jwtAccess = jwtService.generateAccessToken(user);
+        String jwtRefresh = jwtService.generateRefreshToken(user);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
+        refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setDomain("frontend"); //???
+        refreshTokenCookie.setSecure(true);
+        response.addCookie(refreshTokenCookie);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -77,6 +88,7 @@ public class AuthRestController {
     @PostMapping(value = "/login")
     public ResponseEntity<AuthResponseForm> login(
             @Valid @RequestBody SignupForm signupForm,
+            HttpServletResponse response,
             BindingResult validationResult
     ) {
 
@@ -101,6 +113,14 @@ public class AuthRestController {
         }
 
         String jwtAccess = jwtService.generateAccessToken(user.orElseThrow());
+        String jwtRefresh = jwtService.generateRefreshToken(user.orElseThrow());
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
+        refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setDomain("frontend"); //???
+        refreshTokenCookie.setSecure(true);
+        response.addCookie(refreshTokenCookie);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
