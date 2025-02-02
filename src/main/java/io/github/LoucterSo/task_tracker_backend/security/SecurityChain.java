@@ -30,8 +30,8 @@ public class SecurityChain {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(config ->
                         config
-                                .requestMatchers("/api/auth/**").permitAll()
-                                .requestMatchers("/api/users/**").hasAuthority("USER")
+                                .requestMatchers("/auth/**").permitAll()
+                                .requestMatchers("/users/**").hasAuthority("USER")
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

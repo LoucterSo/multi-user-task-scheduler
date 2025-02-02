@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthRestController {
     private final UserServiceImpl userServiceImpl;
@@ -73,7 +73,7 @@ public class AuthRestController {
                     .status(HttpStatus.UNAUTHORIZED)
                     .body(AuthResponseForm.builder()
                             .message("User with wrong email or password")
-                            .build());
+                            .build()); //ERROR
         }
 
         String jwtAccess = jwtService.generateAccessToken(user.orElseThrow());
