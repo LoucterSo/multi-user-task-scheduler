@@ -5,8 +5,11 @@ import lombok.*;
 @Data
 @Builder
 @AllArgsConstructor
-public class LoginForm {
+public class UserResponseForm {
+    private String message;
 
-    private final String email;
-    private final String password;
+    private Long id;
+
+    private String email;
+
 }

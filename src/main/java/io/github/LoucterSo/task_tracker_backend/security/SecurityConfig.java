@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.security;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
-import io.github.LoucterSo.task_tracker_backend.service.UserService;
+import io.github.LoucterSo.task_tracker_backend.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @AllArgsConstructor
 public class SecurityConfig {
 
-    private final UserService userService;
+    private final UserServiceImpl userServiceImpl;
 
     @Bean
     public PasswordEncoder bCryptPasswordEncoder() {
@@ -26,7 +26,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
 
         return email -> {
-            User foundUser = userService.findByEmail(email).orElseThrow(
+            User foundUser = userServiceImpl.findByEmail(email).orElseThrow(
                     () -> new RuntimeException("User with email %s not found".formatted(email))
             );
 

@@ -16,7 +16,8 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id") @ToString
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
 
     @Column(name = "first_name", nullable = false)
@@ -34,9 +35,12 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = false;
 
-    @JoinColumn
-    @OneToMany(targetEntity = Authority.class, fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
     private Set<Authority> authorities = new HashSet<>();
 
     @CreationTimestamp

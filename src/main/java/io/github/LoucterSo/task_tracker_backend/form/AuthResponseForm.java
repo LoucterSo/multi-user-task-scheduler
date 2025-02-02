@@ -1,15 +1,12 @@
 package io.github.LoucterSo.task_tracker_backend.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Data
 @Builder
 @AllArgsConstructor
-@Getter @Setter
-public class AuthResponseData {
+public class AuthResponseForm {
     private String message;
 
     @JsonProperty("access_token")

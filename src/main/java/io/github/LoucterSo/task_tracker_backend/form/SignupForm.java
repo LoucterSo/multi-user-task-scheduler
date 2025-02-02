@@ -1,13 +1,10 @@
 package io.github.LoucterSo.task_tracker_backend.form;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+@Data
 @Builder
 @AllArgsConstructor
-@Getter @Setter
 public class SignupForm {
 
     private final String firstName;
