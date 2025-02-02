@@ -1,12 +1,10 @@
 package io.github.LoucterSo.task_tracker_backend.service;
 
-import io.github.LoucterSo.task_tracker_backend.repository.AuthorityRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
+import io.github.LoucterSo.task_tracker_backend.entity.Authority;
 
-@Service
-@AllArgsConstructor
-public class AuthorityService {
+import java.util.Optional;
 
-    private AuthorityRepository authorityRepository;
+public interface AuthorityService {
+    Optional<Authority> findByRole(Authority.Roles role);
+    void save(Authority authority);
 }
