@@ -12,11 +12,12 @@ import org.springframework.security.core.GrantedAuthority;
 public class Authority implements GrantedAuthority {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "role_id")
+    private Integer id;
 
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, unique = true)
     private Roles role;
 
     @Override
