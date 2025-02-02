@@ -2,6 +2,7 @@ package io.github.LoucterSo.task_tracker_backend.service;
 
 import io.github.LoucterSo.task_tracker_backend.entity.Authority;
 import io.github.LoucterSo.task_tracker_backend.repository.AuthorityRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ public class AuthorityServiceImpl implements AuthorityService {
     }
 
     @Override
+    @Transactional
     public void save(Authority authority) {
         authorityRepository.save(authority);
     }
