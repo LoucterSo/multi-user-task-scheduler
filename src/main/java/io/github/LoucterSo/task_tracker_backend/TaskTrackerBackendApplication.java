@@ -2,17 +2,15 @@ package io.github.LoucterSo.task_tracker_backend;
 
 import io.github.LoucterSo.task_tracker_backend.entity.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
-import io.github.LoucterSo.task_tracker_backend.repository.AuthorityRepository;
 import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
+import io.github.LoucterSo.task_tracker_backend.service.AuthorityService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.beans.Transient;
 import java.util.HashSet;
-import java.util.Set;
 
 @SpringBootApplication
 public class TaskTrackerBackendApplication {
@@ -22,10 +20,21 @@ public class TaskTrackerBackendApplication {
     }
 
     @Bean
-    public CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder encoder) {
+    public CommandLineRunner commandLineRunner(
+            UserRepository userRepository,
+            AuthorityService authorityService,
+            PasswordEncoder encoder
+    ) {
 
         return runner -> {
-            userRepository.deleteAll();
+
+            for (Authority.Roles role : Authority.Roles.values()) {
+                authorityService.findByRole(role).orElseGet(() -> {
+                    Authority authority = new Authority(role);
+                    authorityService.save(authority);
+                    return authority;
+                });
+            }
 
             User admin = User.builder()
                     .firstName("admin")
@@ -36,13 +45,12 @@ public class TaskTrackerBackendApplication {
                     .enabled(true)
                     .build();
 
-            Authority adminAuthority = new Authority();
-            adminAuthority.setRole(Authority.Roles.ADMIN);
-            admin.addRole(adminAuthority);
 
-            Authority userAuthority = new Authority();
-            adminAuthority.setRole(Authority.Roles.USER);
-            admin.addRole(userAuthority);
+            Authority userRole = authorityService.findByRole(Authority.Roles.USER).orElseThrow();
+            Authority adminRole = authorityService.findByRole(Authority.Roles.ADMIN).orElseThrow();
+
+            admin.addRole(userRole);
+            admin.addRole(adminRole);
 
             userRepository.save(admin);
 
