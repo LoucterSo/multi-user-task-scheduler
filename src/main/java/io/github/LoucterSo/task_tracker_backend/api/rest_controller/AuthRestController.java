@@ -3,27 +3,33 @@ package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 import io.github.LoucterSo.task_tracker_backend.entity.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.form.AuthResponseForm;
+import io.github.LoucterSo.task_tracker_backend.form.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.service.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.JwtService;
-import io.github.LoucterSo.task_tracker_backend.service.UserServiceImpl;
+import io.github.LoucterSo.task_tracker_backend.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthRestController {
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthorityService authorityService;
@@ -44,7 +50,7 @@ public class AuthRestController {
 
         final String email = signupForm.getEmail();
 
-        if (userServiceImpl.existsByEmail(email))
+        if (userService.existsByEmail(email))
             return ResponseEntity
                     .status(HttpStatus.CONFLICT)
                     .body(AuthResponseForm.builder()
@@ -65,7 +71,7 @@ public class AuthRestController {
 
         user.addRole(authority);
 
-        userServiceImpl.saveUser(user);
+        userService.saveUser(user);
 
         String jwtAccess = jwtService.generateAccessToken(user);
         String jwtRefresh = jwtService.generateRefreshToken(user);
@@ -87,7 +93,7 @@ public class AuthRestController {
 
     @PostMapping(value = "/login")
     public ResponseEntity<AuthResponseForm> login(
-            @Valid @RequestBody SignupForm signupForm,
+            @Valid @RequestBody LoginForm loginForm,
             HttpServletResponse response,
             BindingResult validationResult
     ) {
@@ -99,10 +105,10 @@ public class AuthRestController {
                             .message(validationResult.getFieldErrors().toString())
                             .build()); //ERROR
 
-        final String email = signupForm.getEmail();
-        final String password = signupForm.getPassword();
+        final String email = loginForm.getEmail();
+        final String password = loginForm.getPassword();
 
-        Optional<User> user = userServiceImpl.findByEmail(email); //ERROR
+        Optional<User> user = userService.findByEmail(email); //ERROR
 
         if (user.isEmpty() || !passwordEncoder.matches(password, user.orElseThrow().getPassword())) {
             return ResponseEntity
@@ -118,7 +124,7 @@ public class AuthRestController {
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
         refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setDomain("frontend"); //???
+        refreshTokenCookie.setPath("/");
         refreshTokenCookie.setSecure(true);
         response.addCookie(refreshTokenCookie);
 
@@ -130,40 +136,64 @@ public class AuthRestController {
                         .build());
     }
 
-//    @PostMapping("/logout")
-//    public ResponseEntity<?> logout(@Valid @RequestBody LoginForm loginForm) {
-//
-//        return null;
-//    }
-//
-//    @PostMapping("/refresh-token")
-//    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
-//        final String header = request.getHeader("Authorization");
-//        final String email;
-//        String jwtRefresh = null;
-//        String jwtAccess = null;
-//
-//        if (header != null && header.startsWith("Bearer ")) {
-//            jwtRefresh = header.substring(7);
-//
-//            email = jwtService.getNameFromJwtRefresh(jwtRefresh);
-//
-//            if (email != null) {
-//                User user = userRepository.findByEmail(email).get();
-//
-//                UserDetails userDetails = new UserDetailsImpl(user);
-//
-//                if (jwtService.isRefreshTokenValid(jwtRefresh, userDetails))
-//                    jwtAccess = jwtService.generateAccessToken(userDetails);
-//
-//            } else {
-//                throw new UsernameNotFoundException(String.format("User with email %s not found", email));
-//            }
-//        }
-//
-//        return ResponseEntity.status(HttpStatus.OK).body(AuthResponseData.builder()
-//                .accessToken(jwtAccess)
-//                .refreshToken(jwtRefresh)
-//                .message("Success").build());
-//    }
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    cookie.setValue("");
+                    cookie.setMaxAge(0);
+                    cookie.setHttpOnly(true);
+                    cookie.setSecure(true);
+                    cookie.setPath("/");
+                    response.addCookie(cookie);
+                }
+            }
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(AuthResponseForm.builder()
+                        .message("Success")
+                        .build());
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refreshToken".equals(cookie.getName())) {
+                    final String refreshToken = cookie.getValue();
+
+                    final String jwtAccess;
+                    String email = jwtService.getSubjectFromToken(refreshToken)
+                            .orElseThrow(); //Error
+
+                    User user = userService.findByEmail(email)
+                            .orElseThrow(); //Error
+
+                    jwtAccess = jwtService.generateAccessToken(user);
+
+                    return ResponseEntity
+                            .status(HttpStatus.OK)
+                            .body(AuthResponseForm.builder()
+                                    .accessToken(jwtAccess)
+                                    .message("Success")
+                                    .build());
+                }
+            }
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(AuthResponseForm.builder()
+                        .message("There's no valid refresh token")
+                        .build()); //ERROR
+    }
 }
