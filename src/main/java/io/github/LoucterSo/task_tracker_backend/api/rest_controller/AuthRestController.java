@@ -7,10 +7,12 @@ import io.github.LoucterSo.task_tracker_backend.form.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.service.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.UserServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.HashSet;
 import java.util.Optional;
@@ -25,7 +27,18 @@ public class AuthRestController {
     private final AuthorityService authorityService;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<AuthResponseForm> signup(@RequestBody SignupForm signupForm) {
+    public ResponseEntity<AuthResponseForm> signup(
+            @Valid @RequestBody SignupForm signupForm,
+            BindingResult validationResult
+    ) {
+
+        if (validationResult.hasErrors())
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(AuthResponseForm.builder()
+                            .message(validationResult.getFieldErrors().toString())
+                            .build());
+
         final String email = signupForm.getEmail();
 
         if (userServiceImpl.existsByEmail(email))
@@ -62,11 +75,22 @@ public class AuthRestController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthResponseForm> login(@RequestBody SignupForm signupForm) {
+    public ResponseEntity<AuthResponseForm> login(
+            @Valid @RequestBody SignupForm signupForm,
+            BindingResult validationResult
+    ) {
+
+        if (validationResult.hasErrors())
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(AuthResponseForm.builder()
+                            .message(validationResult.getFieldErrors().toString())
+                            .build()); //ERROR
+
         final String email = signupForm.getEmail();
         final String password = signupForm.getPassword();
 
-        Optional<User> user = userServiceImpl.findByEmail(email);
+        Optional<User> user = userServiceImpl.findByEmail(email); //ERROR
 
         if (user.isEmpty() || !passwordEncoder.matches(password, user.orElseThrow().getPassword())) {
             return ResponseEntity
