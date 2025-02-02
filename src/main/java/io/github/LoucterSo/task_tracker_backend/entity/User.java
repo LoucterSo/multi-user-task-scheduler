@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "users")
 @Builder @Data
 @NoArgsConstructor @AllArgsConstructor
-@EqualsAndHashCode(of = "id") @ToString
+@EqualsAndHashCode(of = "id")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

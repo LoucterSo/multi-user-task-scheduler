@@ -31,7 +31,8 @@ public class SecurityChain {
                 .authorizeHttpRequests(config ->
                         config
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/users/**").hasAuthority("USER")
+                                .requestMatchers("/users/current").hasAuthority("USER")
+                                .requestMatchers("/users/**").hasAuthority("ADMIN")
                                 .requestMatchers("/error").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
