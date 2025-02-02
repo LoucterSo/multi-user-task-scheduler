@@ -15,11 +15,14 @@ import java.util.function.Function;
 @Service
 public class JwtServiceImpl implements JwtService {
     private final int expireTimeForAccess;
+    private final int expireTimeForRefresh;
     private final SecretKey signingKey;
 
     public JwtServiceImpl(
-            @Value("${jwt.access.secret}") String secret,
-            @Value("${jwt.access.lifetime}") int expireTimeForAccess) {
+            @Value("${jwt.secret}") String secret,
+            @Value("${jwt.access.lifetime}") int expireTimeForAccess,
+            @Value("${jwt.refresh.lifetime}") int expireTimeForRefresh) {
+        this.expireTimeForRefresh = expireTimeForRefresh;
         this.expireTimeForAccess = expireTimeForAccess;
         this.signingKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
@@ -30,6 +33,15 @@ public class JwtServiceImpl implements JwtService {
                 .subject(user.getEmail())
                 .issuedAt(new Date())
                 .expiration(createExpireTimeForAccess())
+                .signWith(signingKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateRefreshToken(User user) {
+        return Jwts.builder()
+                .subject(user.getEmail())
+                .issuedAt(new Date())
+                .expiration(createExpireTimeForRefresh())
                 .signWith(signingKey, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -55,5 +67,9 @@ public class JwtServiceImpl implements JwtService {
 
     private Date createExpireTimeForAccess() {
         return new Date(System.currentTimeMillis() + expireTimeForAccess);
+    }
+
+    private Date createExpireTimeForRefresh() {
+        return new Date(System.currentTimeMillis() + expireTimeForRefresh);
     }
 }
