@@ -3,6 +3,7 @@ package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.form.UserResponseForm;
 import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
+import io.github.LoucterSo.task_tracker_backend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ import java.util.Objects;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserRestController {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @GetMapping("/current")
     public ResponseEntity<UserResponseForm> getCurrentUserData() {
@@ -41,7 +42,7 @@ public class UserRestController {
     @GetMapping
     public List<User> getAllUsers() {
 
-        return userRepository.findAll();
+        return userService.findAll();
     }
 
 }
