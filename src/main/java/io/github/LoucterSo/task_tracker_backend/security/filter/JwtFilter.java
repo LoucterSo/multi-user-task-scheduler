@@ -1,8 +1,8 @@
 package io.github.LoucterSo.task_tracker_backend.security.filter;
 
 import static io.github.LoucterSo.task_tracker_backend.Util.getTokenFromAuthHeader;
-import io.github.LoucterSo.task_tracker_backend.service.JwtService;
-import io.github.LoucterSo.task_tracker_backend.service.UserServiceImpl;
+import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
+import io.github.LoucterSo.task_tracker_backend.service.user.UserServiceImpl;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

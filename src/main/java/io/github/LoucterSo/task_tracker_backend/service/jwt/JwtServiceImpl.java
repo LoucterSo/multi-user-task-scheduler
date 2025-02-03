@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.service;
+package io.github.LoucterSo.task_tracker_backend.service.jwt;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.jsonwebtoken.Claims;

@@ -1,5 +1,6 @@
-package io.github.LoucterSo.task_tracker_backend.service;
+package io.github.LoucterSo.task_tracker_backend.service.user;
 
+import io.github.LoucterSo.task_tracker_backend.entity.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
@@ -34,5 +35,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public Optional<User> findById(Long userId) {
+        return userRepository.findById(userId);
     }
 }
