@@ -2,22 +2,22 @@ package io.github.LoucterSo.task_tracker_backend.service.auth;
 
 import io.github.LoucterSo.task_tracker_backend.entity.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
-import io.github.LoucterSo.task_tracker_backend.form.AuthResponseForm;
-import io.github.LoucterSo.task_tracker_backend.form.LoginForm;
-import io.github.LoucterSo.task_tracker_backend.form.SignupForm;
+import io.github.LoucterSo.task_tracker_backend.exception.*;
+import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
+import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
+import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
+import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
-
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
@@ -30,25 +30,18 @@ public class AuthServiceImpl implements AuthService {
     private final AuthorityService authorityService;
     private final JwtService jwtService;
 
-    public ResponseEntity<AuthResponseForm> register(
+    public AuthResponseForm register(
             SignupForm signupForm,
             BindingResult validationResult,
             HttpServletResponse response) {
 
         if (validationResult.hasErrors())
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponseForm.builder()
-                            .message(validationResult.getFieldErrors().toString())
-                            .build());
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
 
         final String email = signupForm.getEmail();
 
         if (userService.existsByEmail(email))
-            return ResponseEntity
-                    .status(HttpStatus.CONFLICT)
-                    .body(AuthResponseForm.builder()
-                            .message("This email is already taken").build());
+            throw new UserAlreadyExists("User with email %s already exists".formatted(email));
 
         final String password = passwordEncoder.encode(signupForm.getPassword());
 
@@ -61,14 +54,14 @@ public class AuthServiceImpl implements AuthService {
                 .enabled(true)
                 .build();
 
-        Authority authority = authorityService.findByRole(Authority.Roles.USER).orElseThrow();
+        Authority authority = authorityService.findByRole(Authority.Roles.USER)
+                .orElseThrow(() -> new UnexpectedServerException("There's no USER role"));
 
         user.addRole(authority);
 
         userService.saveUser(user);
 
         String jwtAccess = jwtService.generateAccessToken(user);
-
         String jwtRefresh = jwtService.generateRefreshToken(user);
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
@@ -78,43 +71,33 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenCookie.setSecure(true);
         response.addCookie(refreshTokenCookie);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(AuthResponseForm.builder()
+        return AuthResponseForm.builder()
                         .message("Success")
                         .accessToken(jwtAccess)
-                        .build());
+                        .build();
     }
 
     @Override
-    public ResponseEntity<AuthResponseForm> login(
+    public AuthResponseForm login(
             LoginForm loginForm,
             BindingResult validationResult,
             HttpServletResponse response
     ) {
 
         if (validationResult.hasErrors())
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(AuthResponseForm.builder()
-                            .message(validationResult.getFieldErrors().toString())
-                            .build()); //ERROR
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
 
         final String email = loginForm.getEmail();
         final String password = loginForm.getPassword();
 
-        Optional<User> user = userService.findByEmail(email); //ERROR
+        User user = userService.findByEmail(email).orElseThrow(
+                () -> new AuthenticationFailedException("User with email %s doesn't exist".formatted(email)));
 
-        if (user.isEmpty() || !passwordEncoder.matches(password, user.orElseThrow().getPassword())) {
-            return ResponseEntity
-                    .status(HttpStatus.UNAUTHORIZED)
-                    .body(AuthResponseForm.builder()
-                            .message("User with wrong email or password")
-                            .build()); //ERROR
-        }
+        if (!passwordEncoder.matches(password, user.getPassword()))
+            throw new AuthenticationFailedException("Wrong password %s".formatted(password));
 
-        String jwtAccess = jwtService.generateAccessToken(user.orElseThrow());
-        String jwtRefresh = jwtService.generateRefreshToken(user.orElseThrow());
+        String jwtAccess = jwtService.generateAccessToken(user);
+        String jwtRefresh = jwtService.generateRefreshToken(user);
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
         refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
@@ -123,70 +106,60 @@ public class AuthServiceImpl implements AuthService {
         refreshTokenCookie.setSecure(true);
         response.addCookie(refreshTokenCookie);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(AuthResponseForm.builder()
-                        .message("Success")
+        return AuthResponseForm.builder()
+                        .message("Authenticated")
                         .accessToken(jwtAccess)
-                        .build());
+                        .build();
     }
 
     @Override
-    public ResponseEntity<AuthResponseForm> logout(HttpServletRequest request, HttpServletResponse response) {
+    public AuthResponseForm logout(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    cookie.setValue("");
-                    cookie.setMaxAge(0);
-                    cookie.setHttpOnly(true);
-                    cookie.setSecure(true);
-                    cookie.setPath("/");
-                    response.addCookie(cookie);
-                }
-            }
+            Arrays.stream(cookies)
+                    .filter(c -> c.getName().equals("refreshToken"))
+                    .findAny()
+                    .ifPresent(cookie -> {
+                        cookie.setValue("");
+                        cookie.setMaxAge(0);
+                        cookie.setHttpOnly(true);
+                        cookie.setSecure(true);
+                        cookie.setPath("/");
+                        response.addCookie(cookie);
+                    });
         }
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(AuthResponseForm.builder()
+        return AuthResponseForm.builder()
+                        .message("User logout")
+                        .build();
+    }
+
+    @Override
+    public AuthResponseForm refreshToken(HttpServletRequest request) {
+        Cookie[] cookies = Optional.ofNullable(request.getCookies())
+                .orElseThrow(() ->  new RefreshTokenNotFoundException("Refresh token cookie not found"));
+
+        Cookie refreshCookie = Arrays.stream(cookies)
+                .filter(c -> c.getName().equals("refreshToken"))
+                .findAny()
+                .orElseThrow(() -> new RefreshTokenNotFoundException("Refresh token cookie not found"));
+
+        final String refreshToken = refreshCookie.getValue();
+
+        final String jwtAccess;
+        String email = jwtService.getSubjectFromToken(refreshToken)
+                .orElseThrow(() -> new MalformedJwtException("Token doesn't have subject"));
+
+        User user = userService.findByEmail(email)
+                .orElseThrow(() -> new AuthenticationFailedException("User with email %s doesn't exist".formatted(email)));
+
+        jwtAccess = jwtService.generateAccessToken(user);
+
+        return AuthResponseForm.builder()
+                        .accessToken(jwtAccess)
                         .message("Success")
-                        .build());
+                        .build();
     }
 
-    @Override
-    public ResponseEntity<AuthResponseForm> refreshToken(HttpServletRequest request) {
-        Cookie[] cookies = request.getCookies();
-
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if ("refreshToken".equals(cookie.getName())) {
-                    final String refreshToken = cookie.getValue();
-
-                    final String jwtAccess;
-                    String email = jwtService.getSubjectFromToken(refreshToken)
-                            .orElseThrow(); //Error
-
-                    User user = userService.findByEmail(email)
-                            .orElseThrow(); //Error
-
-                    jwtAccess = jwtService.generateAccessToken(user);
-
-                    return ResponseEntity
-                            .status(HttpStatus.OK)
-                            .body(AuthResponseForm.builder()
-                                    .accessToken(jwtAccess)
-                                    .message("Success")
-                                    .build());
-                }
-            }
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.UNAUTHORIZED)
-                .body(AuthResponseForm.builder()
-                        .message("There's no valid refresh token")
-                        .build()); //ERROR
-    }
 }
