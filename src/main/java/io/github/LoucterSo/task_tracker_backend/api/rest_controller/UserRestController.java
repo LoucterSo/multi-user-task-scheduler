@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
-import io.github.LoucterSo.task_tracker_backend.form.UserResponseForm;
+import io.github.LoucterSo.task_tracker_backend.form.user.UserResponseForm;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -31,9 +31,18 @@ public class UserRestController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public ResponseEntity<List<UserResponseForm>> getAllUsers() {
 
-        return userService.findAll();
+        List<UserResponseForm> responseForms = userService.findAll().stream()
+                .map(user -> UserResponseForm.builder()
+                        .message("Success")
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .build()).toList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(responseForms);
     }
 
 }
