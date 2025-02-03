@@ -13,6 +13,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,9 +26,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 @Component
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class JwtFilter extends OncePerRequestFilter {
-
+    private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
     private final UserServiceImpl userServiceImpl;
     private final JwtService jwtService;
 
@@ -35,7 +38,9 @@ public class JwtFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String path = request.getRequestURI();
+        logger.info("Processing request with path {}.", path);
         if (path.startsWith("/api/v1/auth")) {
+            logger.info("Skipping request with path {}.", path);
             filterChain.doFilter(request, response);
             return;
         }
@@ -55,8 +60,8 @@ public class JwtFilter extends OncePerRequestFilter {
 
                                                         authorization.setDetails(
                                                                 new WebAuthenticationDetailsSource().buildDetails(request));
-                                                        System.out.println("Success with token");
                                                         SecurityContextHolder.getContext().setAuthentication(authorization);
+                                                        logger.info("User {} authenticated successfully", authorization);
                                                     });
                                 }
                             });
@@ -64,7 +69,7 @@ public class JwtFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         } catch (ExpiredJwtException | MalformedJwtException | SignatureException | UnsupportedJwtException ex) {
-
+            logger.error("Exception {} occurred. Message: {}", ex.getClass().getName(), ex.getMessage());
             handleJwtException(response, ex);
         }
     }
@@ -73,7 +78,9 @@ public class JwtFilter extends OncePerRequestFilter {
         response.setStatus(HttpStatus.UNAUTHORIZED.value());
         response.setContentType("application/json");
         PrintWriter writer = response.getWriter();
-        writer.write("{\"message\": \"" + e.getMessage() + "\", \"timeStamp\": \"" + System.currentTimeMillis() + "\"}");
+        String jsonResponse =  "{\"message\": \"" + e.getMessage() + "\", \"timeStamp\": \"" + System.currentTimeMillis() + "\"}";
+        writer.write(jsonResponse);
         writer.flush();
+        logger.error("Exception {} handled. Response {} with status {} send.", e.getClass().getName(), jsonResponse, HttpStatus.UNAUTHORIZED.value());
     }
 }
