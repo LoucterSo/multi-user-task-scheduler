@@ -7,11 +7,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Builder @Data
+@Builder @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class User {
@@ -34,6 +35,9 @@ public class User {
 
     @Column(nullable = false)
     private boolean enabled = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Task> tasks;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE})
     @JoinTable(
