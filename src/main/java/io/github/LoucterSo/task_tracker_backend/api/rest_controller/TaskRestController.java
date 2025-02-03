@@ -7,7 +7,6 @@ import io.github.LoucterSo.task_tracker_backend.service.task.TaskService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
