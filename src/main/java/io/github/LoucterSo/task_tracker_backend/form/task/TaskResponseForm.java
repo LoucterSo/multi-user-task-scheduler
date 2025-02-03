@@ -19,7 +19,7 @@ public class TaskResponseForm {
 
     public TaskResponseForm(Task task) {
         setId(task.getId());
-        setUserId(task.getId());
+        setUserId(task.getUser().getId());
         setTitle(task.getTitle());
         setDescription(task.getDescription());
         setDone(task.isDone());
