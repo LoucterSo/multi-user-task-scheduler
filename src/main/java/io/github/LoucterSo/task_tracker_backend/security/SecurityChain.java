@@ -30,6 +30,7 @@ public class SecurityChain {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(config ->
                         config
+                                .requestMatchers("/tasks/**").hasAuthority("USER")
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/users/current").hasAuthority("USER")
                                 .requestMatchers("/users/**").hasAuthority("ADMIN")
