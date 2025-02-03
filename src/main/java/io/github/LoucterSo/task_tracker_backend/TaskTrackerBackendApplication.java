@@ -3,7 +3,7 @@ package io.github.LoucterSo.task_tracker_backend;
 import io.github.LoucterSo.task_tracker_backend.entity.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
-import io.github.LoucterSo.task_tracker_backend.service.AuthorityService;
+import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -36,23 +36,25 @@ public class TaskTrackerBackendApplication {
                 });
             }
 
-            User admin = User.builder()
-                    .firstName("admin")
-                    .lastName("admin")
-                    .email("loucterso@gmail.com")
-                    .password(encoder.encode("123"))
-                    .authorities(new HashSet<>())
-                    .enabled(true)
-                    .build();
+            if (!userRepository.existsByEmail("loucterso@gmail.com")) {
+                User admin = User.builder()
+                        .firstName("admin")
+                        .lastName("admin")
+                        .email("loucterso@gmail.com")
+                        .password(encoder.encode("123"))
+                        .authorities(new HashSet<>())
+                        .enabled(true)
+                        .build();
 
 
-            Authority userRole = authorityService.findByRole(Authority.Roles.USER).orElseThrow();
-            Authority adminRole = authorityService.findByRole(Authority.Roles.ADMIN).orElseThrow();
+                Authority userRole = authorityService.findByRole(Authority.Roles.USER).orElseThrow();
+                Authority adminRole = authorityService.findByRole(Authority.Roles.ADMIN).orElseThrow();
 
-            admin.addRole(userRole);
-            admin.addRole(adminRole);
+                admin.addRole(userRole);
+                admin.addRole(adminRole);
 
-            userRepository.save(admin);
+                userRepository.save(admin);
+            }
 
         };
     }
