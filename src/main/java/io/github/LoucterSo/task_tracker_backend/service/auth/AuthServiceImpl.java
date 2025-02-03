@@ -14,34 +14,40 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
     private final JwtService jwtService;
 
+
     public AuthResponseForm register(
             SignupForm signupForm,
-            BindingResult validationResult,
             HttpServletResponse response) {
 
-        if (validationResult.hasErrors())
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        LOGGER.info("Starting processing the registration method.");
 
         final String email = signupForm.getEmail();
 
-        if (userService.existsByEmail(email))
+        if (userService.existsByEmail(email)) {
+            LOGGER.error("User passed login that already exists.");
             throw new UserAlreadyExists("User with email %s already exists".formatted(email));
+        }
 
         final String password = passwordEncoder.encode(signupForm.getPassword());
 
@@ -61,59 +67,61 @@ public class AuthServiceImpl implements AuthService {
 
         userService.saveUser(user);
 
-        String jwtAccess = jwtService.generateAccessToken(user);
-        String jwtRefresh = jwtService.generateRefreshToken(user);
+        LOGGER.info("New user created. Email: {}.", user.getEmail());
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
-        refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(true);
-        response.addCookie(refreshTokenCookie);
+        String[] tokens = createTokenPair(user);
+
+        createRefreshTokenCookie(response, tokens[1]);
+
+        LOGGER.info("Stopping processing the registration method.");
 
         return AuthResponseForm.builder()
-                        .message("Success")
-                        .accessToken(jwtAccess)
-                        .build();
+                .message("Success")
+                .accessToken(tokens[0])
+                .build();
     }
 
     @Override
     public AuthResponseForm login(
             LoginForm loginForm,
-            BindingResult validationResult,
             HttpServletResponse response
     ) {
 
-        if (validationResult.hasErrors())
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        LOGGER.info("Starting processing the login method.");
 
         final String email = loginForm.getEmail();
         final String password = loginForm.getPassword();
 
         User user = userService.findByEmail(email).orElseThrow(
-                () -> new AuthenticationFailedException("User with email %s doesn't exist".formatted(email)));
+                () -> {
+                    LOGGER.error("User passed email that doesn't exist. Email: {}.", email);
+                    return new AuthenticationFailedException("User with email %s doesn't exist".formatted(email));
+                });
 
-        if (!passwordEncoder.matches(password, user.getPassword()))
+        if (!passwordEncoder.matches(password, user.getPassword())) {
+            LOGGER.error("User passed wrong password.");
             throw new AuthenticationFailedException("Wrong password %s".formatted(password));
+        }
 
-        String jwtAccess = jwtService.generateAccessToken(user);
-        String jwtRefresh = jwtService.generateRefreshToken(user);
+        LOGGER.info("User with passed data found.");
 
-        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
-        refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setSecure(true);
-        response.addCookie(refreshTokenCookie);
+        String[] tokens = createTokenPair(user);
+
+        createRefreshTokenCookie(response, tokens[1]);
+
+        LOGGER.info("Stopping processing the login method.");
 
         return AuthResponseForm.builder()
-                        .message("Authenticated")
-                        .accessToken(jwtAccess)
-                        .build();
+                .message("Authenticated")
+                .accessToken(tokens[0])
+                .build();
     }
 
     @Override
     public AuthResponseForm logout(HttpServletRequest request, HttpServletResponse response) {
+
+        LOGGER.info("Starting processing the logout method.");
+
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
@@ -128,38 +136,87 @@ public class AuthServiceImpl implements AuthService {
                         cookie.setPath("/");
                         response.addCookie(cookie);
                     });
+            LOGGER.info("Refresh token cookie deleted.");
         }
 
+        LOGGER.info("User is logged out.");
+
+        LOGGER.info("Stopping processing the logout method.");
+
         return AuthResponseForm.builder()
-                        .message("User logout")
-                        .build();
+                .message("User logout")
+                .build();
     }
 
     @Override
     public AuthResponseForm refreshToken(HttpServletRequest request) {
+
+        LOGGER.info("Starting processing the refresh token method.");
+
         Cookie[] cookies = Optional.ofNullable(request.getCookies())
-                .orElseThrow(() ->  new RefreshTokenNotFoundException("Refresh token cookie not found"));
+                .orElseThrow(() -> {
+                    LOGGER.error("Cookies not found.");
+                    return new RefreshTokenNotFoundException("Refresh token cookie not found");
+                });
 
         Cookie refreshCookie = Arrays.stream(cookies)
                 .filter(c -> c.getName().equals("refreshToken"))
                 .findAny()
-                .orElseThrow(() -> new RefreshTokenNotFoundException("Refresh token cookie not found"));
+                .orElseThrow(() -> {
+                    LOGGER.error("Refresh token cookie not found.");
+                    return new RefreshTokenNotFoundException("Refresh token cookie not found");
+                });
 
         final String refreshToken = refreshCookie.getValue();
 
+        LOGGER.info("Refresh token found. Verifying token...");
+
         final String jwtAccess;
         String email = jwtService.getSubjectFromToken(refreshToken)
-                .orElseThrow(() -> new MalformedJwtException("Token doesn't have subject"));
+                .orElseThrow(() -> {
+                    LOGGER.error("Token doesn't have subject");
+                    return new MalformedJwtException("Token doesn't have subject");
+                });
 
         User user = userService.findByEmail(email)
-                .orElseThrow(() -> new AuthenticationFailedException("User with email %s doesn't exist".formatted(email)));
+                .orElseThrow(() -> {
+                    LOGGER.error("User with email {} doesn't exist", email);
+                    return new AuthenticationFailedException("User with email %s doesn't exist".formatted(email));
+                });
+
+        LOGGER.info("Refresh token is valid.");
 
         jwtAccess = jwtService.generateAccessToken(user);
 
+        LOGGER.info("New access toke generated.");
+
+        LOGGER.info("Stopping processing the refresh token method.");
+
         return AuthResponseForm.builder()
-                        .accessToken(jwtAccess)
-                        .message("Success")
-                        .build();
+                .accessToken(jwtAccess)
+                .message("Success")
+                .build();
+    }
+
+    private void createRefreshTokenCookie(HttpServletResponse response, String jwtRefresh) {
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
+        refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setSecure(true);
+        response.addCookie(refreshTokenCookie);
+
+        LOGGER.info("Refresh token passed to cookies.");
+    }
+
+    private String[] createTokenPair(User user) {
+        String jwtAccess = jwtService.generateAccessToken(user);
+        String jwtRefresh = jwtService.generateRefreshToken(user);
+
+        LOGGER.info("Access and refresh tokens created.");
+
+        return new String[]{jwtAccess, jwtRefresh};
     }
 
 }
