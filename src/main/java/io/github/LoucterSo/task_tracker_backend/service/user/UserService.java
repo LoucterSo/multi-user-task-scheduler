@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.service.user;
 
-import io.github.LoucterSo.task_tracker_backend.entity.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
 
 import java.util.List;
 import java.util.Optional;

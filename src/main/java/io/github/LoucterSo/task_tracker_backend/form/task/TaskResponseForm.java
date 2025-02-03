@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.form;
+package io.github.LoucterSo.task_tracker_backend.form.task;
 
 import io.github.LoucterSo.task_tracker_backend.entity.Task;
 import lombok.Getter;

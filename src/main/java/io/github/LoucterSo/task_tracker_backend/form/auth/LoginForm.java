@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.form;
+package io.github.LoucterSo.task_tracker_backend.form.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
