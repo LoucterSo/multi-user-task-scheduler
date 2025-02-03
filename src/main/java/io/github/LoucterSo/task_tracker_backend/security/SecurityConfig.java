@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.security;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
-import io.github.LoucterSo.task_tracker_backend.service.UserServiceImpl;
+import io.github.LoucterSo.task_tracker_backend.service.user.UserServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

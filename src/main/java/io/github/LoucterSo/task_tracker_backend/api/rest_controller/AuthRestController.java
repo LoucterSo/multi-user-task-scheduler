@@ -5,24 +5,21 @@ import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.form.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.SignupForm;
-import io.github.LoucterSo.task_tracker_backend.service.AuthorityService;
-import io.github.LoucterSo.task_tracker_backend.service.JwtService;
-import io.github.LoucterSo.task_tracker_backend.service.UserService;
+import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityService;
+import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
+import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.servlet.http.Cookie;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Optional;
 
 @RestController
