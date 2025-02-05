@@ -1,9 +1,0 @@
-.idea
-.mvn
-.gitignore
-.gitattributes
-.dockerignore
-Dockerfile
-HELP.md
-mvnw
-mvnw.cmd
