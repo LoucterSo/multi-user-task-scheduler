@@ -1,6 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.service.user;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.form.user.UserResponseForm;
 import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
 import io.github.LoucterSo.task_tracker_backend.service.task.TaskServiceImpl;
 import jakarta.transaction.Transactional;
@@ -35,12 +36,28 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseForm> getAllUsers() {
+
+        return userRepository.findAll().stream()
+                .map(user -> UserResponseForm.builder()
+                        .message("Success")
+                        .id(user.getId())
+                        .email(user.getEmail())
+                        .build()).toList();
     }
 
     @Override
     public Optional<User> findById(Long userId) {
         return userRepository.findById(userId);
     }
+
+    @Override
+    public UserResponseForm createUserResponse(User user) {
+        return UserResponseForm.builder()
+                .message("Success")
+                .id(user.getId())
+                .email(user.getEmail())
+                .build();
+    }
+
 }

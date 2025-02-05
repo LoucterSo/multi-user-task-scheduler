@@ -25,25 +25,16 @@ public class UserRestController {
     @GetMapping("/current")
     public ResponseEntity<UserResponseForm> getCurrentUserData(@AuthenticationPrincipal User currentUser) {
 
+        UserResponseForm userResponseForm = userService.createUserResponse(currentUser);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(UserResponseForm.builder()
-                        .message("Success")
-                        .id(currentUser.getId())
-                        .email(currentUser.getEmail())
-                        .build());
+                .body(userResponseForm);
     }
 
     @GetMapping
     public ResponseEntity<List<UserResponseForm>> getAllUsers() {
 
-        List<UserResponseForm> responseForms = userService.findAll().stream()
-                .map(user -> UserResponseForm.builder()
-                        .message("Success")
-                        .id(user.getId())
-                        .email(user.getEmail())
-                        .build()).toList();
-
+        List<UserResponseForm> responseForms = userService.getAllUsers();
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseForms);
