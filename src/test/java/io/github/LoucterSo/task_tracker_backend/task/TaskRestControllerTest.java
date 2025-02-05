@@ -53,6 +53,7 @@ public class TaskRestControllerTest {
     @Autowired
     private TaskRestController taskRestController;
 
+    //JwtService не создается в контексте
     @MockitoBean
     private JwtService jwtService;
 
@@ -158,7 +159,7 @@ public class TaskRestControllerTest {
     }
 
     @Test
-    void createTask_shouldResponseWithCreatedTaskAndOCreatedStatusCode() throws Exception {
+    void createTask_shouldResponseWithCreatedTaskAndCreatedStatusCode() throws Exception {
 
         User mockUser = new User();
         mockUser.setId(1L);
@@ -203,7 +204,7 @@ public class TaskRestControllerTest {
     }
 
     @Test
-    void updateTask_shouldResponseWithCreatedTaskAndOCreatedStatusCode() throws Exception {
+    void updateTask_shouldResponseWithCreatedTaskAndOkStatusCode() throws Exception {
 
         User mockUser = new User();
         mockUser.setId(1L);
@@ -249,7 +250,7 @@ public class TaskRestControllerTest {
     }
 
     @Test
-    void deleteTask_shouldResponseWithCreatedTaskAndOCreatedStatusCode() throws Exception {
+    void deleteTask_shouldResponseWithCreatedTaskAndOkStatusCode() throws Exception {
 
         User mockUser = new User();
         mockUser.setId(1L);
