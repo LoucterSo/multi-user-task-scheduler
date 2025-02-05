@@ -2,26 +2,28 @@ package io.github.LoucterSo.task_tracker_backend.service.task;
 
 import io.github.LoucterSo.task_tracker_backend.entity.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.exception.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskForm;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
 import io.github.LoucterSo.task_tracker_backend.repository.TaskRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
     private final TaskRepository taskRepository;
 
     @Override
     @Transactional
-    public TaskResponseForm saveTask(TaskForm task, User user) {
+    public TaskResponseForm saveTask(User user, TaskForm task) {
 
         Task newTask = new Task();
         newTask.setTitle(task.getTitle());
@@ -65,7 +67,7 @@ public class TaskServiceImpl implements TaskService {
         Task task = findTaskById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
 
-        return !task.getUser().equals(user);
+        return task.getUser().equals(user);
     }
 
     @Override
@@ -73,6 +75,17 @@ public class TaskServiceImpl implements TaskService {
         return  user.getTasks().stream()
                 .map(TaskResponseForm::new)
                 .toList();
+    }
+
+    @Override
+    public TaskResponseForm getUserTaskById(User user, Long taskId) {
+        if (!userHasTask(user, taskId))
+            throw new AuthenticationFailedException("User doesn't have rights to get this task");
+
+        Task task = findTaskById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
+
+        return new TaskResponseForm(task);
     }
 
 

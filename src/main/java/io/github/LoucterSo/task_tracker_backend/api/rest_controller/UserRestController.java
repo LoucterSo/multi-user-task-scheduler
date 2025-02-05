@@ -2,8 +2,11 @@ package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.form.user.UserResponseForm;
+import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtServiceImpl;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -16,6 +19,7 @@ import java.util.List;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserRestController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserRestController.class);
     private final UserService userService;
 
     @GetMapping("/current")

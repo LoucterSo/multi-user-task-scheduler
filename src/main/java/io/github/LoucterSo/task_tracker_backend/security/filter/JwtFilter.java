@@ -2,7 +2,7 @@ package io.github.LoucterSo.task_tracker_backend.security.filter;
 
 import static io.github.LoucterSo.task_tracker_backend.Util.getTokenFromAuthHeader;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
-import io.github.LoucterSo.task_tracker_backend.service.user.UserServiceImpl;
+import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -27,7 +27,7 @@ import java.io.PrintWriter;
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
     private static final Logger LOGGER = LoggerFactory.getLogger(JwtFilter.class);
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userService;
     private final JwtService jwtService;
 
     @Override
@@ -49,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     .ifPresent(
                             email -> {
                                 if (SecurityContextHolder.getContext().getAuthentication() == null) {
-                                    userServiceImpl
+                                    userService
                                             .findByEmail(email)
                                             .ifPresent(
                                                     user -> {

@@ -1,9 +1,12 @@
 package io.github.LoucterSo.task_tracker_backend.service.jwt;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
@@ -14,6 +17,7 @@ import java.util.function.Function;
 
 @Service
 public class JwtServiceImpl implements JwtService {
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtServiceImpl.class);
     private final int expireTimeForAccess;
     private final long expireTimeForRefresh;
     private final SecretKey signingKey;

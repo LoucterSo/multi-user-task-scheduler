@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface TaskService {
-    TaskResponseForm saveTask(TaskForm task, User user);
+    TaskResponseForm saveTask(User user, TaskForm task);
     TaskResponseForm deleteTaskById(Long taskId);
     Optional<Task> findTaskById(Long taskId);
     boolean userHasTask(User user, Long taskId);
     TaskResponseForm updateTask(TaskForm taskForm, Long taskId);
     List<TaskResponseForm> getUserTasks(User user);
+    TaskResponseForm getUserTaskById(User user, Long taskId);
 }

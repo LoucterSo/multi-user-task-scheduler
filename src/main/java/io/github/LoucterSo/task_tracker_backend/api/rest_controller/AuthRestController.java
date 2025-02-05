@@ -1,5 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
+import io.github.LoucterSo.task_tracker_backend.exception.ValidationFoundErrorsException;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
@@ -8,6 +9,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 public class AuthRestController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestController.class);
     private final AuthService authService;
 
     @PostMapping(value = "/signup")
@@ -27,7 +30,12 @@ public class AuthRestController {
             HttpServletResponse response
     ) {
 
-        AuthResponseForm responseForm = authService.register(signupForm, validationResult, response);
+        if (validationResult.hasErrors()) {
+            LOGGER.error("Invalid data send.");
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        }
+
+        AuthResponseForm responseForm = authService.register(signupForm, response);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(responseForm);
@@ -40,7 +48,12 @@ public class AuthRestController {
             HttpServletResponse response
     ) {
 
-        AuthResponseForm responseForm = authService.login(loginForm, validationResult, response);
+        if (validationResult.hasErrors()) {
+            LOGGER.error("Invalid data send.");
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        }
+
+        AuthResponseForm responseForm = authService.login(loginForm, response);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseForm);

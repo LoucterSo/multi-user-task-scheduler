@@ -1,6 +1,5 @@
 package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
-import io.github.LoucterSo.task_tracker_backend.entity.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.exception.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.UnexpectedServerException;
@@ -9,28 +8,27 @@ import io.github.LoucterSo.task_tracker_backend.form.task.TaskForm;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
 import io.github.LoucterSo.task_tracker_backend.service.task.TaskService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
 public class TaskRestController {
-
+    private static final Logger LOGGER = LoggerFactory.getLogger(TaskRestController.class);
     private final TaskService taskService;
     private final UserService userService;
 
     @GetMapping
-    @Transactional
-    public ResponseEntity<List<?>> getUserTask(@AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<List<?>> getUserTasks(@AuthenticationPrincipal User currentUser) {
 
         User userWithTasks = userService.findById(currentUser.getId())
                 .orElseThrow(() -> new UnexpectedServerException("Current user not found"));
@@ -40,6 +38,16 @@ public class TaskRestController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(userTasks);
+    }
+
+    @GetMapping("/{taskId}")
+    public ResponseEntity<?> getUserTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
+
+        TaskResponseForm taskResponseForm = taskService.getUserTaskById(currentUser, taskId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(taskResponseForm);
     }
 
     @PostMapping
@@ -52,7 +60,7 @@ public class TaskRestController {
         if (validationResult.hasErrors())
             throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
 
-        TaskResponseForm createdTask = taskService.saveTask(task, currentUser);
+        TaskResponseForm createdTask = taskService.saveTask(currentUser, task);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -71,7 +79,7 @@ public class TaskRestController {
         if (validationResult.hasErrors())
             throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
 
-        if (taskService.userHasTask(currentUser, taskId))
+        if (!taskService.userHasTask(currentUser, taskId))
             throw new AuthenticationFailedException("User doesn't have rights to change this task");
 
         TaskResponseForm mergedTask = taskService.updateTask(task, taskId);
@@ -84,8 +92,8 @@ public class TaskRestController {
     @DeleteMapping("/{taskId}")
     public ResponseEntity<?> deleteTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
 
-        if (taskService.userHasTask(currentUser, taskId))
-            throw new AuthenticationFailedException("User doesn't have rights to change this task");
+        if (!taskService.userHasTask(currentUser, taskId))
+            throw new AuthenticationFailedException("User doesn't have rights to delete this task");
 
         TaskResponseForm removedTask = taskService.deleteTaskById(taskId);
 
