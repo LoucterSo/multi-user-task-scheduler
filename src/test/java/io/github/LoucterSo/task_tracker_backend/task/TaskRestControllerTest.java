@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.user;
+package io.github.LoucterSo.task_tracker_backend.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
