@@ -32,7 +32,7 @@ public class UserRestController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponseForm>> getAllUsers() {
+    public ResponseEntity<List<UserResponseForm>> getAllUserData() {
 
         List<UserResponseForm> responseForms = userService.getAllUsers();
         return ResponseEntity
