@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.HashSet;
+import java.util.Set;
 
 @Configuration
 public class Initialization {
@@ -32,21 +33,18 @@ public class Initialization {
             }
 
             if (!userRepository.existsByEmail("loucterso@gmail.com")) {
+
+                Authority userRole = authorityService.findByRole(Authority.Roles.USER).orElseThrow();
+                Authority adminRole = authorityService.findByRole(Authority.Roles.ADMIN).orElseThrow();
+
                 User admin = User.builder()
                         .firstName("admin")
                         .lastName("admin")
                         .email("loucterso@gmail.com")
                         .password(encoder.encode("123"))
-                        .authorities(new HashSet<>())
+                        .authorities(Set.of(userRole, adminRole))
                         .enabled(true)
                         .build();
-
-
-                Authority userRole = authorityService.findByRole(Authority.Roles.USER).orElseThrow();
-                Authority adminRole = authorityService.findByRole(Authority.Roles.ADMIN).orElseThrow();
-
-                admin.addRole(userRole);
-                admin.addRole(adminRole);
 
                 userRepository.save(admin);
             }

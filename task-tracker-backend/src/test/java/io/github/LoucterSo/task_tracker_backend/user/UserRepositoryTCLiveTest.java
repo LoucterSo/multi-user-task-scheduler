@@ -5,6 +5,8 @@ import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.repository.AuthorityRepository;
 import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -60,10 +62,20 @@ public class UserRepositoryTCLiveTest {
         assertThat(postgresdb.isRunning()).isTrue();
     }
 
+    @BeforeEach
+    void setUp() {
+        for (Authority.Roles role : Authority.Roles.values()) {
+            authorityRepository.findByRole(role).orElseGet(() -> {
+                Authority authority = new Authority(role);
+                authorityRepository.save(authority);
+                return authority;
+            });
+        }
+    }
+
     @Test
-    @Transactional
     void testSimpleSaveAndFind() {
-        Authority authority = new Authority(Authority.Roles.USER);
+        Authority authority = authorityRepository.findByRole(Authority.Roles.USER).orElseThrow();
 
         User newUser = userRepository.save(User.builder()
                 .firstName("First Name")
@@ -78,7 +90,7 @@ public class UserRepositoryTCLiveTest {
         assertThat(newUser).isEqualTo(foundUser);
 
         List<Authority> foundAuthorities = authorityRepository.findAll();
-        assertThat(foundAuthorities.size()).isEqualTo(1);
+        assertThat(foundAuthorities.size()).isEqualTo(2);
         assertThat(foundAuthorities).contains(authority);
 
         userRepository.deleteAll();
@@ -86,7 +98,7 @@ public class UserRepositoryTCLiveTest {
         assertThat(userRepository.findById(newUser.getId()).isEmpty()).isTrue();
         assertThat(userRepository.findAll().size()).isEqualTo(0);
 
-        assertThat(authorityRepository.findAll().size()).isEqualTo(1);
+        assertThat(authorityRepository.findAll().size()).isEqualTo(2);
         assertThat(authorityRepository.findAll()).contains(authority);
     }
 
