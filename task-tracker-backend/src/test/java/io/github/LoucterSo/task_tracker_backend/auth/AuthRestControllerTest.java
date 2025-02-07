@@ -56,41 +56,41 @@ public class AuthRestControllerTest {
         assertThat(authRestController).isNotNull();
     }
 
-//    @Test
-//    void register_shouldResponseWithAccessTokenCreatedStatusCodeAndRefreshTokenPutInCookie() throws Exception {
-//
-//        SignupForm signupForm = SignupForm.builder()
-//                .firstName("First Name")
-//                .lastName("Last Name")
-//                .password("123")
-//                .email("email@someemail.com")
-//                .build();
-//        AuthResponseForm authResponseForm = new AuthResponseForm("accessToken");
-//        String refreshToken = "refreshToken";
-//
-//        when(authService.register(any(SignupForm.class), any(HttpServletResponse.class))).thenReturn(authResponseForm);
-//
-//        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
-//        refreshTokenCookie.setMaxAge(10000);
-//        refreshTokenCookie.setHttpOnly(true);
-//        refreshTokenCookie.setPath("/");
-//        refreshTokenCookie.setSecure(true);
-//
-//        MockHttpServletResponse response = this.mockMvc.perform(post("/auth/signup")
-//                        .cookie(refreshTokenCookie)
-//                        .contentType(MediaType.APPLICATION_JSON)
-//                        .content(objectMapper.writeValueAsString(signupForm))
-//                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-//                )
-//                .andExpect(status().isCreated())
-//                .andExpect(jsonPath("$.access_token")
-//                        .value(authResponseForm.getAccessToken()))
-//                .andReturn().getResponse();
-//
-//        Cookie cookieValue = response.getCookie("refreshToken");
-//        assertThat(cookieValue).isNotNull();
-//        assertThat(cookieValue.getValue()).isEqualTo(refreshToken);
-//    }
+    @Test
+    void register_shouldResponseWithAccessTokenCreatedStatusCodeAndRefreshTokenPutInCookie() throws Exception {
+
+        SignupForm signupForm = SignupForm.builder()
+                .firstName("First Name")
+                .lastName("Last Name")
+                .password("123")
+                .email("email@someemail.com")
+                .build();
+        AuthResponseForm authResponseForm = new AuthResponseForm("accessToken");
+        String refreshToken = "refreshToken";
+
+        when(authService.register(any(SignupForm.class), any(HttpServletResponse.class))).thenReturn(authResponseForm);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
+        refreshTokenCookie.setMaxAge(10000);
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setSecure(true);
+
+        MockHttpServletResponse response = this.mockMvc.perform(post("/auth/signup")
+                        .cookie(refreshTokenCookie)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(signupForm))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                )
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.access_token")
+                        .value(authResponseForm.getAccessToken()))
+                .andReturn().getResponse();
+
+        Cookie cookieValue = response.getCookie("refreshToken");
+        assertThat(cookieValue).isNotNull();
+        assertThat(cookieValue.getValue()).isEqualTo(refreshToken);
+    }
 
 //    @Test
 //    void login_shouldResponseWithUserTaskAndOkStatusCode() throws Exception {
