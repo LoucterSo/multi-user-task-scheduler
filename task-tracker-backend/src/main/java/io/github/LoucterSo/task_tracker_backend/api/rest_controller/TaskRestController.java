@@ -2,7 +2,7 @@ package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
 import io.github.LoucterSo.task_tracker_backend.entity.User;
 import io.github.LoucterSo.task_tracker_backend.exception.AuthenticationFailedException;
-import io.github.LoucterSo.task_tracker_backend.exception.UnexpectedServerException;
+import io.github.LoucterSo.task_tracker_backend.exception.UserNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.ValidationFoundErrorsException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskForm;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
@@ -31,7 +31,7 @@ public class TaskRestController {
     public ResponseEntity<List<TaskResponseForm>> getUserTasks(@AuthenticationPrincipal User currentUser) {
 
         User userWithTasks = userService.findById(currentUser.getId())
-                .orElseThrow(() -> new UnexpectedServerException("Current user not found"));
+                .orElseThrow(() -> new UserNotFoundException("Current user not found"));
 
         List<TaskResponseForm> userTasks = taskService.getUserTasks(userWithTasks);
 
