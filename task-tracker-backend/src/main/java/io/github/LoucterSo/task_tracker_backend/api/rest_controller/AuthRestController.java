@@ -24,7 +24,7 @@ public class AuthRestController {
     private final AuthService authService;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<?> register(
+    public ResponseEntity<AuthResponseForm> register(
             @Valid @RequestBody SignupForm signupForm,
             BindingResult validationResult,
             HttpServletResponse response
@@ -42,7 +42,7 @@ public class AuthRestController {
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<?> login(
+    public ResponseEntity<AuthResponseForm> login(
             @Valid @RequestBody LoginForm loginForm,
             BindingResult validationResult,
             HttpServletResponse response
@@ -61,7 +61,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request, HttpServletResponse response) {
+    public ResponseEntity<AuthResponseForm> logout(HttpServletRequest request, HttpServletResponse response) {
 
         AuthResponseForm responseForm = authService.logout(request, response);
         return ResponseEntity
@@ -70,7 +70,7 @@ public class AuthRestController {
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(HttpServletRequest request) {
+    public ResponseEntity<AuthResponseForm> refreshToken(HttpServletRequest request) {
 
         AuthResponseForm responseForm = authService.refreshToken(request);
         return ResponseEntity

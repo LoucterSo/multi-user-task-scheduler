@@ -28,7 +28,7 @@ public class TaskRestController {
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<?>> getUserTasks(@AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<List<TaskResponseForm>> getUserTasks(@AuthenticationPrincipal User currentUser) {
 
         User userWithTasks = userService.findById(currentUser.getId())
                 .orElseThrow(() -> new UnexpectedServerException("Current user not found"));
@@ -41,7 +41,7 @@ public class TaskRestController {
     }
 
     @GetMapping("/{taskId}")
-    public ResponseEntity<?> getUserTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<TaskResponseForm> getUserTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
 
         TaskResponseForm taskResponseForm = taskService.getUserTaskById(currentUser, taskId);
 
@@ -51,7 +51,7 @@ public class TaskRestController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createTask(
+    public ResponseEntity<TaskResponseForm> createTask(
             @Valid @RequestBody TaskForm task,
             BindingResult validationResult,
             @AuthenticationPrincipal User currentUser
@@ -69,7 +69,7 @@ public class TaskRestController {
     }
 
     @PutMapping("/{taskId}")
-    public ResponseEntity<?> updateTask(
+    public ResponseEntity<TaskResponseForm> updateTask(
             @PathVariable Long taskId,
             @Valid @RequestBody TaskForm task,
             BindingResult validationResult,
@@ -90,7 +90,7 @@ public class TaskRestController {
     }
 
     @DeleteMapping("/{taskId}")
-    public ResponseEntity<?> deleteTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
+    public ResponseEntity<TaskResponseForm> deleteTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
 
         if (!taskService.userHasTask(currentUser, taskId))
             throw new AuthenticationFailedException("User doesn't have rights to delete this task");
