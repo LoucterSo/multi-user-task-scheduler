@@ -22,7 +22,6 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
 
     @Override
-    @Transactional
     public TaskResponseForm saveTask(User user, TaskForm task) {
 
         Task newTask = new Task();
@@ -35,7 +34,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional
     public TaskResponseForm updateTask(TaskForm task, Long taskId) {
         Task taskToUpdate= taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
@@ -48,7 +46,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional
     public TaskResponseForm deleteTaskById(Long taskId) {
         Task taskToDelete = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
