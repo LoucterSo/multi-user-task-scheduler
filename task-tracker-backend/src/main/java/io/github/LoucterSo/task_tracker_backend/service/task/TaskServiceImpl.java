@@ -7,7 +7,6 @@ import io.github.LoucterSo.task_tracker_backend.exception.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskForm;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
 import io.github.LoucterSo.task_tracker_backend.repository.TaskRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,8 +53,7 @@ public class TaskServiceImpl implements TaskService {
         return new TaskResponseForm(taskToDelete);
     }
 
-    @Override
-    public Optional<Task> findTaskById(Long taskId) {
+    private Optional<Task> findTaskById(Long taskId) {
         return taskRepository.findById(taskId);
     }
 
