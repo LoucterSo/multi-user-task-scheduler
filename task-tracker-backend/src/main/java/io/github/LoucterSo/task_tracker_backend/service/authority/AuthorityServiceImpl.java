@@ -17,7 +17,7 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Override
     public Optional<Authority> findByRole(Authority.Roles role) {
-        LOGGER.info("Finding authority by role {}", role.name());
+        LOGGER.info("Searching for authority by role {}", role.name());
         return authorityRepository.findByRole(role);
     }
 
