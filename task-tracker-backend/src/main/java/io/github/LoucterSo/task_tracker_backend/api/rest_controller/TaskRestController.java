@@ -1,6 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.UserNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.ValidationFoundErrorsException;

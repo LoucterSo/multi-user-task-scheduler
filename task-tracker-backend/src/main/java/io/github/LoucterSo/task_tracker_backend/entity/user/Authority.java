@@ -1,14 +1,17 @@
-package io.github.LoucterSo.task_tracker_backend.entity;
+package io.github.LoucterSo.task_tracker_backend.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles")
-@Data
+@Data @Builder
 @NoArgsConstructor @AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+@EqualsAndHashCode(of = {"id", "role"})
 public class Authority implements GrantedAuthority {
 
     @Id
@@ -16,8 +19,14 @@ public class Authority implements GrantedAuthority {
     @Column(name = "role_id")
     private Integer id;
 
+    @JsonIgnore
+    @Fetch(FetchMode.SELECT)
+    @JoinColumn(name = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     @Enumerated(value = EnumType.STRING)
-    @Column(name = "role", nullable = false, unique = true)
+    @Column(name = "role", nullable = false)
     private Roles role;
 
     @Override
@@ -29,7 +38,13 @@ public class Authority implements GrantedAuthority {
         this.role = role;
     }
 
+    @Override
+    public String toString() {
+        return "role='" + role + "'";
+    }
+
     public enum Roles {
-        USER, ADMIN
+        USER,
+        ADMIN
     }
 }

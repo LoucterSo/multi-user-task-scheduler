@@ -1,11 +1,9 @@
 package io.github.LoucterSo.task_tracker_backend.user;
 
-import io.github.LoucterSo.task_tracker_backend.entity.Authority;
-import io.github.LoucterSo.task_tracker_backend.entity.User;
-import io.github.LoucterSo.task_tracker_backend.repository.AuthorityRepository;
-import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
-import jakarta.transaction.Transactional;
-import org.junit.jupiter.api.BeforeAll;
+import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
+import io.github.LoucterSo.task_tracker_backend.repository.user.AuthorityRepository;
+import io.github.LoucterSo.task_tracker_backend.repository.user.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

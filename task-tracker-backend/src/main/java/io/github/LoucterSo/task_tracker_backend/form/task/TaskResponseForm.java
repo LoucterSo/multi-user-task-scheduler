@@ -1,6 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.form.task;
 
-import io.github.LoucterSo.task_tracker_backend.entity.Task;
+import io.github.LoucterSo.task_tracker_backend.entity.task.Task;
 import lombok.Getter;
 import lombok.Setter;
 

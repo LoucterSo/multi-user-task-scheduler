@@ -1,6 +1,8 @@
 package io.github.LoucterSo.task_tracker_backend.security.filter;
 
 import static io.github.LoucterSo.task_tracker_backend.Util.getTokenFromAuthHeader;
+
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -59,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                                         authorization.setDetails(
                                                                 new WebAuthenticationDetailsSource().buildDetails(request));
                                                         SecurityContextHolder.getContext().setAuthentication(authorization);
-                                                        LOGGER.info("User {} authenticated successfully", authorization);
+                                                        LOGGER.info("User {} authenticated successfully", user.getEmail() + user.getAuthorities());
                                                     });
                                 }
                             });

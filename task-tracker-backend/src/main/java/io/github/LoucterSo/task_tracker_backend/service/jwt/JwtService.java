@@ -1,6 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.service.jwt;
 
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 
 import java.util.Date;
 import java.util.Optional;

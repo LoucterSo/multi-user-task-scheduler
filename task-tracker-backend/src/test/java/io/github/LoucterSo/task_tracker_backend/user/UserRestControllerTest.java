@@ -1,8 +1,8 @@
 package io.github.LoucterSo.task_tracker_backend.user;
 
 import io.github.LoucterSo.task_tracker_backend.api.rest_controller.UserRestController;
-import io.github.LoucterSo.task_tracker_backend.entity.Authority;
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.form.user.UserResponseForm;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;

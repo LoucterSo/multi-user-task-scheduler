@@ -1,6 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
 
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.form.user.UserResponseForm;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import lombok.RequiredArgsConstructor;

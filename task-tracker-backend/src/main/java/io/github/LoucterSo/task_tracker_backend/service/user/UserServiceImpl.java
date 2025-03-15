@@ -1,10 +1,8 @@
 package io.github.LoucterSo.task_tracker_backend.service.user;
 
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.form.user.UserResponseForm;
-import io.github.LoucterSo.task_tracker_backend.repository.UserRepository;
-import io.github.LoucterSo.task_tracker_backend.service.task.TaskServiceImpl;
-import jakarta.transaction.Transactional;
+import io.github.LoucterSo.task_tracker_backend.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +16,6 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
-
-    @Override
-    public boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
-    }
 
     @Override
     public Optional<User> findByEmail(String email) {

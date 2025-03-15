@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.service.auth;
 
-import io.github.LoucterSo.task_tracker_backend.entity.Authority;
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.*;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
@@ -10,20 +10,15 @@ import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityServi
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import io.jsonwebtoken.MalformedJwtException;
-
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -56,13 +51,13 @@ public class AuthServiceImpl implements AuthService {
                 .enabled(true)
                 .build();
 
-        Authority authority = authorityService.findByRole(Authority.Roles.USER)
-                .orElseThrow(() -> new UnexpectedServerException("There's no USER role"));
+        Authority authority = Authority.builder().role(Authority.Roles.USER).user(user).build();
 
         user.addRole(authority);
 
         try {
             userService.saveUser(user);
+            authorityService.save(authority);
         } catch (DataIntegrityViolationException ex) {
             LOGGER.error("User passed login that already exists.");
             throw new UserAlreadyExists("User with email %s already exists".formatted(email));

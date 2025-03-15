@@ -1,12 +1,12 @@
 package io.github.LoucterSo.task_tracker_backend.service.task;
 
-import io.github.LoucterSo.task_tracker_backend.entity.Task;
-import io.github.LoucterSo.task_tracker_backend.entity.User;
+import io.github.LoucterSo.task_tracker_backend.entity.task.Task;
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskForm;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
-import io.github.LoucterSo.task_tracker_backend.repository.TaskRepository;
+import io.github.LoucterSo.task_tracker_backend.repository.task.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

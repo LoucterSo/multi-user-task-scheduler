@@ -1,5 +1,6 @@
-package io.github.LoucterSo.task_tracker_backend.entity;
+package io.github.LoucterSo.task_tracker_backend.entity.task;
 
+import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -9,7 +10,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tasks")
-@NoArgsConstructor @AllArgsConstructor
+@AllArgsConstructor @NoArgsConstructor
 @Data
 @EqualsAndHashCode(of = "id")
 public class Task {
