@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,11 +45,6 @@ public class AuthServiceImpl implements AuthService {
 
         final String email = signupForm.getEmail();
 
-        if (userService.existsByEmail(email)) {
-            LOGGER.error("User passed login that already exists.");
-            throw new UserAlreadyExists("User with email %s already exists".formatted(email));
-        }
-
         final String password = passwordEncoder.encode(signupForm.getPassword());
 
         User user = User.builder()
@@ -65,7 +61,12 @@ public class AuthServiceImpl implements AuthService {
 
         user.addRole(authority);
 
-        userService.saveUser(user);
+        try {
+            userService.saveUser(user);
+        } catch (DataIntegrityViolationException ex) {
+            LOGGER.error("User passed login that already exists.");
+            throw new UserAlreadyExists("User with email %s already exists".formatted(email));
+        }
 
         LOGGER.info("New user created. Email: {}.", user.getEmail());
 
