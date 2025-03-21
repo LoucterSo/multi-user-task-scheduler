@@ -1,6 +1,30 @@
 spring:
   application:
     name: task-tracker-email-sender
+  main:
+    log-startup-info: false
+    banner-mode: 'off'
   kafka:
     consumer:
       group-id: my-group
+
+logging:
+  level:
+    org:
+      springframework:
+        web: error
+        security:
+          nodeValue: error
+          web:
+            FilterChainProxy: error
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: error
+        SQL: error
+
+server:
+  servlet:
+    context-path: /api/v1
+  port: '8081'
