@@ -6,6 +6,7 @@ import io.github.LoucterSo.task_tracker_backend.exception.*;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
+import io.github.LoucterSo.task_tracker_backend.form.email.EmailDto;
 import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
@@ -34,7 +35,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
     private final JwtService jwtService;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<EmailDto, EmailDto> kafkaTemplate;
 
     public AuthResponseForm register(
             SignupForm signupForm,
@@ -79,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
 
         createRefreshTokenCookie(response, refreshToken);
 
-        kafkaTemplate.send("EMAIL_SENDING_TASKS", email);
+        kafkaTemplate.send("EMAIL_SENDING_TASKS", new EmailDto(email, "Welcome!", "Hi!")); //!!!!
 
         LOGGER.info("Message sent to kafka");
 
