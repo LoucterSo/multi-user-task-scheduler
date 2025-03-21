@@ -11,7 +11,7 @@
 
     <groupId>io.github.LoucterSo</groupId>
     <artifactId>task-tracker-backend</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1</version>
     <name>task-tracker-backend</name>
     <description>This application provides JWT-based authentication and a REST API for managing users and tasks.
     </description>
