@@ -18,6 +18,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import static io.github.LoucterSo.task_tracker_backend.entity.user.Authority.Roles.*;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -58,12 +60,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(config ->
                         config
-                                .requestMatchers("/tasks/**").hasAuthority("USER")
+                                .requestMatchers("/tasks/**").hasAnyAuthority(USER.name(), ADMIN.name())
                                 .requestMatchers("/auth/**").permitAll()
-                                .requestMatchers("/users/current").hasAuthority("USER")
-                                .requestMatchers("/users/**").hasAuthority("ADMIN")
-                                .requestMatchers("/error").permitAll()
-                                .anyRequest().authenticated())
+                                .requestMatchers("/users/current").hasAnyAuthority(USER.name(), ADMIN.name())
+                                .requestMatchers("/users/**").hasAuthority(ADMIN.name())
+                                .anyRequest().hasAnyAuthority(USER.name(), ADMIN.name()))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

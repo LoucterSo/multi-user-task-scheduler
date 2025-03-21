@@ -2,7 +2,7 @@ package io.github.LoucterSo.task_tracker_backend.task;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import io.github.LoucterSo.task_tracker_backend.api.rest_controller.TaskRestController;
+import io.github.LoucterSo.task_tracker_backend.api.controller.task.TaskRestController;
 import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.task.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;

@@ -3,20 +3,26 @@ hibernate:
   show_sql: 'false'
 
 spring:
+  application:
+    name: task-tracker-backend
+  main:
+    banner-mode: 'off'
+    log-startup-info: false
   jpa:
     properties:
       hibernate:
         format-sql: 'false'
     hibernate:
       ddl-auto: create-drop
-  application:
-    name: task-tracker-backend
-  main:
-    banner-mode: 'off'
   datasource:
-    password: '123'
+    password: 123
     username: postgres
     url: jdbc:postgresql://localhost:5432/backend
+#  kafka:
+#    bootstrap-servers: localhost:9092
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.apache.kafka.common.serialization.StringSerializer
 
 logging:
   level:

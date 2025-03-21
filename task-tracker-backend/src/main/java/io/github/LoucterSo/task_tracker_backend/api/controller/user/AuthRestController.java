@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.api.rest_controller;
+package io.github.LoucterSo.task_tracker_backend.api.controller.user;
 
 import io.github.LoucterSo.task_tracker_backend.exception.ValidationFoundErrorsException;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
@@ -9,18 +9,21 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class AuthRestController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthRestController.class);
     private final AuthService authService;
 
     @PostMapping(value = "/signup")
@@ -30,12 +33,7 @@ public class AuthRestController {
             HttpServletResponse response
     ) {
 
-        if (validationResult.hasErrors()) {
-            LOGGER.error("Invalid data send.");
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-        }
-
-        AuthResponseForm responseForm = authService.register(signupForm, response);
+        AuthResponseForm responseForm = authService.register(signupForm, response, validationResult);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(responseForm);
@@ -48,12 +46,7 @@ public class AuthRestController {
             HttpServletResponse response
     ) {
 
-        if (validationResult.hasErrors()) {
-            LOGGER.error("Invalid data send.");
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-        }
-
-        AuthResponseForm responseForm = authService.login(loginForm, response);
+        AuthResponseForm responseForm = authService.login(loginForm, response, validationResult);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(responseForm);

@@ -8,4 +8,4 @@ FROM eclipse-temurin:17-jdk
 WORKDIR /app
 COPY --from=build /app/target/task-tracker-backend-0.0.1-SNAPSHOT.jar /app/task-tracker-backend-0.0.1-SNAPSHOT.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-Dspring.profiles.active=prod", "-jar", "/app/task-tracker-backend-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "/app/task-tracker-backend-0.0.1-SNAPSHOT.jar"]

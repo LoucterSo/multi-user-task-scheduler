@@ -17,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
+
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
@@ -31,14 +34,21 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
     private final JwtService jwtService;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public AuthResponseForm register(
             SignupForm signupForm,
-            HttpServletResponse response) {
+            HttpServletResponse response,
+            BindingResult validationResult) {
 
         LOGGER.info("Starting processing the registration method.");
 
-        final String email = signupForm.getEmail();
+        if (validationResult.hasErrors()) {
+            LOGGER.error("Invalid data send.");
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        }
+
+        final String email = signupForm.getEmail().trim().toLowerCase();
 
         final String password = passwordEncoder.encode(signupForm.getPassword());
 
@@ -50,9 +60,7 @@ public class AuthServiceImpl implements AuthService {
                 .authorities(new HashSet<>())
                 .enabled(true)
                 .build();
-
         Authority authority = Authority.builder().role(Authority.Roles.USER).user(user).build();
-
         user.addRole(authority);
 
         try {
@@ -66,25 +74,37 @@ public class AuthServiceImpl implements AuthService {
         LOGGER.info("New user created. Email: {}.", user.getEmail());
 
         String[] tokens = createTokenPair(user);
+        String refreshToken = tokens[1];
+        String accessToken = tokens[0];
 
-        createRefreshTokenCookie(response, tokens[1]);
+        createRefreshTokenCookie(response, refreshToken);
+
+        kafkaTemplate.send("EMAIL_SENDING_TASKS", email);
+
+        LOGGER.info("Message sent to kafka");
 
         LOGGER.info("Stopping processing the registration method.");
 
         return AuthResponseForm.builder()
-                .accessToken(tokens[0])
+                .accessToken(accessToken)
                 .build();
     }
 
     @Override
     public AuthResponseForm login(
             LoginForm loginForm,
-            HttpServletResponse response
+            HttpServletResponse response,
+            BindingResult validationResult
     ) {
 
         LOGGER.info("Starting processing the login method.");
 
-        final String email = loginForm.getEmail();
+        if (validationResult.hasErrors()) {
+            LOGGER.error("Invalid data send.");
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        }
+
+        final String email = loginForm.getEmail().trim().toLowerCase();
         final String password = loginForm.getPassword();
 
         User user = userService.findByEmail(email).orElseThrow(
@@ -101,13 +121,15 @@ public class AuthServiceImpl implements AuthService {
         LOGGER.info("User with passed data found.");
 
         String[] tokens = createTokenPair(user);
+        String refreshToken = tokens[1];
+        String accessToken = tokens[0];
 
-        createRefreshTokenCookie(response, tokens[1]);
+        createRefreshTokenCookie(response, refreshToken);
 
         LOGGER.info("Stopping processing the login method.");
 
         return AuthResponseForm.builder()
-                .accessToken(tokens[0])
+                .accessToken(accessToken)
                 .build();
     }
 

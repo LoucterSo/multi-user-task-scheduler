@@ -1,29 +1,14 @@
 package io.github.LoucterSo.task_tracker_backend;
 
-import io.github.LoucterSo.task_tracker_backend.api.rest_controller.AuthRestController;
-import io.github.LoucterSo.task_tracker_backend.api.rest_controller.TaskRestController;
-import io.github.LoucterSo.task_tracker_backend.api.rest_controller.UserRestController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.web.servlet.MockMvc;
 
-
-@WebMvcTest
-@AutoConfigureMockMvc
-class TaskTrackerBackendApplicationTests {
-
-	@Autowired
-	private AuthRestController authRestController;
-	@Autowired
-	private TaskRestController taskRestController;
-	@Autowired
-	private UserRestController userRestController;
-
-	@Autowired
-	private MockMvc mockMvc;
-
+//@WebMvcTest
+//@AutoConfigureMockMvc
+//class TaskTrackerBackendApplicationTests {
+//
+//
+//	@Autowired
+//	private MockMvc mockMvc;
+//
 //	@Test
 //	void registerShouldResponseWith201Status() throws Exception {
 //
@@ -107,5 +92,5 @@ class TaskTrackerBackendApplicationTests {
 //				.as(Movie[].class);
 //		assertThat(movies.length).isEqualTo(2);
 //	}
-
-}
+//
+//}

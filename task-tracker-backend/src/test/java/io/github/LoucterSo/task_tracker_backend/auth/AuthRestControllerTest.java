@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.auth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.github.LoucterSo.task_tracker_backend.api.rest_controller.AuthRestController;
+import io.github.LoucterSo.task_tracker_backend.api.controller.user.AuthRestController;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.service.auth.AuthService;
@@ -17,6 +17,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -68,7 +69,7 @@ public class AuthRestControllerTest {
         AuthResponseForm authResponseForm = new AuthResponseForm("accessToken");
         String refreshToken = "refreshToken";
 
-        when(authService.register(any(SignupForm.class), any(HttpServletResponse.class))).thenReturn(authResponseForm);
+        when(authService.register(any(SignupForm.class), any(HttpServletResponse.class), any(BindingResult.class))).thenReturn(authResponseForm);
 
         Cookie refreshTokenCookie = new Cookie("refreshToken", refreshToken);
         refreshTokenCookie.setMaxAge(10000);
