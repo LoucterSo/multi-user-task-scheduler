@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: task-tracker-email-sender
+  kafka:
+    consumer:
+      group-id: my-group
