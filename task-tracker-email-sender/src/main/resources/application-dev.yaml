@@ -5,8 +5,20 @@ spring:
     log-startup-info: false
     banner-mode: 'off'
   kafka:
+    listener:
+      ack-mode: record
     consumer:
-      group-id: my-group
+      group-id: kafka-core-consumer-group
+      auto-offset-reset: earliest
+    properties:
+      metrics:
+        num:
+          samples: 4
+      # partition:
+      #     assignment:
+      #         strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor
+  mail:
+    from: loucterso@gmail.com
 
 logging:
   level:
@@ -26,5 +38,5 @@ logging:
 
 server:
   servlet:
-    context-path: /api/v1
+    context-path: /v1
   port: '8081'
