@@ -4,6 +4,11 @@ spring:
   main:
     log-startup-info: false
     banner-mode: 'off'
+  kafka:
+    bootstrap-servers: kafka:9092
+
+url:
+  backend: backend:8080
 
 logging:
   level:

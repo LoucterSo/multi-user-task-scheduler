@@ -15,14 +15,9 @@ spring:
     hibernate:
       ddl-auto: create-drop
   datasource:
-    password: 123
-    username: postgres
     url: jdbc:postgresql://localhost:5432/backend
-#  kafka:
-#    bootstrap-servers: localhost:9092
-#    producer:
-#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#      value-serializer: org.apache.kafka.common.serialization.Serializer<io.github.LoucterSo.task_tracker_backend.form.email.EmailDto>
+  kafka:
+    bootstrap-servers: kafka:9092
 
 logging:
   level:
@@ -39,13 +34,6 @@ logging:
             sql:
               BasicBinder: error
         SQL: error
-
-jwt:
-  refresh:
-    lifetime: '2592000000'
-  secret: 5u8ADYq3thVmYq3t6w9zCEHxADGYq3thVmYq3t6w9zCEHxDGGKbPeSVmYq3thVmYq3t6Yq3thVmYq3t6w9zCEHxADGPeShVmVmYq3tYq3t6w9zCDGKbPeSw9zCEHxAD3t6w9zCEHGmYVmYq3tq3t6w9zCE
-  access:
-    lifetime: '900000'
 
 server:
   servlet:

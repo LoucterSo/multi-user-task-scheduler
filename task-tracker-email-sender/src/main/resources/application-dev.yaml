@@ -5,6 +5,7 @@ spring:
     log-startup-info: false
     banner-mode: 'off'
   kafka:
+    bootstrap-servers: kafka:9092
     listener:
       ack-mode: record
     consumer:
@@ -17,8 +18,6 @@ spring:
   mail:
     host: smtp.gmail.com
     port: 587
-    username: loucterso@gmail.com
-    password: 123123
     protocol: smtp
     properties:
       mail:

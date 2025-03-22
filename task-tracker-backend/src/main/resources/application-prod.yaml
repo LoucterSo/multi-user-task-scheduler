@@ -15,8 +15,6 @@ spring:
     hibernate:
       ddl-auto: update
   datasource:
-    password: ${DB_PASSWORD}
-    username: ${DB_USERNAME}
     url: jdbc:postgresql://postgres:5432/backend
   kafka:
     bootstrap-servers: kafka:9092
@@ -39,13 +37,6 @@ logging:
             sql:
               BasicBinder: error
         SQL: error
-
-jwt:
-  refresh:
-    lifetime: ${REFRESH_LIFETIME}
-  secret: ${SECRET}
-  access:
-    lifetime: ${ACCESS_LIFETIME}
 
 server:
   servlet:
