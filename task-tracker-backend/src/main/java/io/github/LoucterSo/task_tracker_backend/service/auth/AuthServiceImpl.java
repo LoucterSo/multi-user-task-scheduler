@@ -1,5 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.service.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.*;
@@ -26,6 +28,7 @@ import org.springframework.validation.BindingResult;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -35,7 +38,8 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
     private final JwtService jwtService;
-    private final KafkaTemplate<EmailDto, EmailDto> kafkaTemplate;
+    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
     public AuthResponseForm register(
             SignupForm signupForm,
@@ -80,7 +84,11 @@ public class AuthServiceImpl implements AuthService {
 
         createRefreshTokenCookie(response, refreshToken);
 
-        kafkaTemplate.send("EMAIL_SENDING_TASKS", new EmailDto(email, "Welcome!", "Hi!")); //!!!!
+        try {
+            kafkaTemplate.send("EMAIL_SENDING_TASKS", "" + new Random().nextInt(0, 2), objectMapper.writeValueAsString(new EmailDto(email, "Welcome!", "Hi!"))); //!!!!
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
 
         LOGGER.info("Message sent to kafka");
 
