@@ -4,9 +4,12 @@ import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.repository.user.AuthorityRepository;
 import io.github.LoucterSo.task_tracker_backend.repository.user.UserRepository;
+import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Set;
@@ -14,7 +17,13 @@ import java.util.Set;
 @Configuration
 public class Initialization {
 
+    @Value("${scheduler.email}")
+    private String schedulerEmail;
+    @Value("${scheduler.password}")
+    private String schedulerPassword;
+
     @Bean
+    @Transactional
     public CommandLineRunner commandLineRunner(
             UserRepository userRepository,
             AuthorityRepository authRepository,
@@ -23,33 +32,28 @@ public class Initialization {
 
         return runner -> {
 
-//            for (Authority.Roles role : Authority.Roles.values()) {
-//                authorityService.findByRole(role).orElseGet(() -> {
-//                    Authority authority = new Authority(role);
-//                    authorityService.save(authority);
-//                    return authority;
-//                });
-//            }
-
-            if (!userRepository.existsByEmail("loucterso@gmail.com")) {
-
-                User admin = User.builder()
+            try {
+                User scheduler = User.builder()
                         .firstName("admin")
-                        .lastName("admin")
-                        .email("loucterso@gmail.com")
-                        .password(encoder.encode("123"))
+                        .lastName("scheduler")
+                        .email(schedulerEmail)
+                        .password(encoder.encode(schedulerPassword))
                         .enabled(true)
                         .build();
-                Authority userRole = Authority.builder().role(Authority.Roles.USER).user(admin).build();
-                Authority adminRole = Authority.builder().role(Authority.Roles.ADMIN).user(admin).build();
-                admin.setAuthorities(Set.of(userRole, adminRole));
 
-                userRepository.save(admin);
+                Authority userRole = Authority.builder().role(Authority.Roles.USER).user(scheduler).build();
+                Authority adminRole = Authority.builder().role(Authority.Roles.ADMIN).user(scheduler).build();
+
+                scheduler.setAuthorities(Set.of(userRole, adminRole));
+
+                userRepository.save(scheduler);
                 authRepository.save(userRole);
                 authRepository.save(adminRole);
-            }
 
+                schedulerEmail = null;
+                schedulerPassword = null;
+            } catch (DataIntegrityViolationException ex) {
+            }
         };
     }
-
 }
