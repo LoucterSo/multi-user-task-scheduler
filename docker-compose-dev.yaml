@@ -5,10 +5,34 @@ services:
     container_name: postgres
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 12341234
+      POSTGRES_PASSWORD: 123
       POSTGRES_DB: backend
     volumes:
       - postgres-data:/var/lib/postgresql/data
+
+  task-tracker-email-sender:
+    container_name: email-sender
+    build:
+      context: ./task-tracker-email-sender
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_MAIL_USERNAME: loc@gmail.com
+      SPRING_MAIL_PASSWORD: 123
+    depends_on:
+      - kafka
+  
+  task-tracker-scheduler:
+    container_name: scheduler
+    build:
+      context: ./task-tracker-scheduler
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SCHEDULER_PASSWORD: 123
+      SCHEDULER_EMAIL: scheduler@gmail.com
+    depends_on:
+      - kafka
 
   task-tracker-backend:
     container_name: backend
@@ -17,10 +41,20 @@ services:
       dockerfile: Dockerfile
     ports:
       - '8080:8080'
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: 123
+      SCHEDULER_PASSWORD: 123
+      SCHEDULER_EMAIL: scheduler@gmail.com
+      JWT_REFRESH_LIFETIME: 900000
+      JWT_ACCESS_LIFETIME: 2592000000
+      JWT_SECRET: 5u8ADYq3thVmYq3t6w9zCEHxADGYq3thVmYq3t6w9zCEHxDGGKbPeSVmYq3thVmYq3t6Yq3thVmYq3t6w9zCEHxADGPeShVmVmYq3tYq3t6w9zCDGKbPeSw9zCEHxAD3t6w9zCEHGmYVmYq3tq3t6w9zCE
     depends_on:
       - postgresdb
-      - kafka
-
+      - task-tracker-email-sender
+      - task-tracker-scheduler
+  
   kafka:
     image: bitnami/kafka
     container_name: kafka

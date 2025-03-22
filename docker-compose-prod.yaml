@@ -21,6 +21,19 @@ services:
       SPRING_MAIL_PASSWORD: ${MAIL_PASSWORD}
     depends_on:
       - kafka
+  
+  task-tracker-scheduler:
+    container_name: scheduler
+    build:
+      context: ./task-tracker-scheduler
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SCHEDULER_PASSWORD: ${SCHEDULER_PASSWORD}
+      SCHEDULER_EMAIL: ${SCHEDULER_EMAIL}
+    depends_on:
+      - kafka
+      - task-tracker-backend
 
   task-tracker-backend:
     container_name: backend
@@ -36,6 +49,8 @@ services:
       JWT_REFRESH_LIFETIME: ${REFRESH_LIFETIME}
       JWT_ACCESS_LIFETIME: ${ACCESS_LIFETIME}
       JWT_SECRET: ${SECRET}
+      SCHEDULER_PASSWORD: ${SCHEDULER_PASSWORD}
+      SCHEDULER_EMAIL: ${SCHEDULER_EMAIL}
     depends_on:
       - postgresdb
       - task-tracker-email-sender
