@@ -14,11 +14,21 @@ spring:
       metrics:
         num:
           samples: 4
-      # partition:
-      #     assignment:
-      #         strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor
   mail:
-    from: loucterso@gmail.com
+    host: smtp.gmail.com
+    port: 587
+    username: loucterso@gmail.com
+    password: 123123
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 logging:
   level:
@@ -35,8 +45,3 @@ logging:
             sql:
               BasicBinder: error
         SQL: error
-
-server:
-  servlet:
-    context-path: /v1
-  port: '8081'

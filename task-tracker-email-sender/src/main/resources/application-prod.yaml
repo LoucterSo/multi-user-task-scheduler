@@ -5,6 +5,7 @@ spring:
     log-startup-info: false
     banner-mode: 'off'
   kafka:
+    bootstrap-servers: kafka:9092
     listener:
       ack-mode: record
     consumer:
@@ -14,11 +15,22 @@ spring:
       metrics:
         num:
           samples: 4
-      # partition:
-      #     assignment:
-      #         strategy: org.apache.kafka.clients.consumer.RoundRobinAssignor
   mail:
-    from: %{MAIL_SENDER}
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 logging:
   level:
     org:
@@ -34,8 +46,3 @@ logging:
             sql:
               BasicBinder: error
         SQL: error
-
-server:
-  servlet:
-    context-path: /v1
-  port: '8081'
