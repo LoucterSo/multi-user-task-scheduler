@@ -1,3 +1,29 @@
 spring:
   application:
     name: task-tracker-scheduler
+  main:
+    log-startup-info: false
+    banner-mode: 'off'
+  kafka:
+    bootstrap-servers: kafka:9092
+
+logging:
+  level:
+    org:
+      springframework:
+        web: error
+        security:
+          nodeValue: error
+          web:
+            FilterChainProxy: error
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: error
+        SQL: error
+
+server:
+  servlet:
+    context-path: /api/v1
+  port: '8082'
