@@ -7,5 +7,4 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk
 WORKDIR /
 COPY --from=build /target/*.jar task-tracker-email-sender.jar
-EXPOSE 8081
 ENTRYPOINT ["java", "-jar", "task-tracker-email-sender.jar"]
