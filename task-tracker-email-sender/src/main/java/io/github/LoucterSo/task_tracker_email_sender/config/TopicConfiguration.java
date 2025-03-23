@@ -11,7 +11,7 @@ public class TopicConfiguration {
     @Bean
     public NewTopic createTopic() {
         return TopicBuilder.name("EMAIL_SENDING_TASKS")
-                .partitions(2)
+                .partitions(3)
                 .build();
     }
 }
