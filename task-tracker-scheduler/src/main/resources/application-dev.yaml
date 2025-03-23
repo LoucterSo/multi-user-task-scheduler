@@ -8,7 +8,7 @@ spring:
     bootstrap-servers: kafka:9092
 
 url:
-  backend: backend:8080
+  backend: http://backend:8080
 
 logging:
   level:
