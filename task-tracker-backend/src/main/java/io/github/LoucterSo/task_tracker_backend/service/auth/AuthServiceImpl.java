@@ -85,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
         createRefreshTokenCookie(response, refreshToken);
 
         try {
-            kafkaTemplate.send("EMAIL_SENDING_TASKS", "" + new Random().nextInt(0, 2), objectMapper.writeValueAsString(new EmailDto(email, "Welcome!", "Hi!"))); //!!!!
+            kafkaTemplate.send("EMAIL_SENDING_TASKS", "" + new Random().nextInt(0, 3), objectMapper.writeValueAsString(new EmailDto(email, "Welcome!", "Hi!"))); //!!!!!
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
