@@ -20,6 +20,7 @@
         <maven.compiler.target>17</maven.compiler.target>
         <jsonwebtoken.version>0.12.6</jsonwebtoken.version>
         <testcontainers.version>1.19.3</testcontainers.version>
+        <liquidbase.version>4.31.1</liquidbase.version>
     </properties>
 
     <dependencies>
@@ -32,6 +33,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>${liquidbase.version}</version>
         </dependency>
 
         <!-- security -->

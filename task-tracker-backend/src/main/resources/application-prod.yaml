@@ -13,11 +13,15 @@ spring:
       hibernate:
         format-sql: 'false'
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
   datasource:
     url: jdbc:postgresql://postgres:5432/backend
   kafka:
     bootstrap-servers: kafka:9092
+  liquibase:
+    default-schema: public
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.json
 
 logging:
   level:
