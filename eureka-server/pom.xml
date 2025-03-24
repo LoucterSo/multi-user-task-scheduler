@@ -20,6 +20,7 @@
 	</properties>
 
 	<dependencies>
+
 		<!-- spring cloud -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
