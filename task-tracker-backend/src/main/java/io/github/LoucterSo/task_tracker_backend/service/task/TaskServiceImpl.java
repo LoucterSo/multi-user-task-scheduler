@@ -2,85 +2,78 @@ package io.github.LoucterSo.task_tracker_backend.service.task;
 
 import io.github.LoucterSo.task_tracker_backend.entity.task.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.exception.AuthenticationFailedException;
-import io.github.LoucterSo.task_tracker_backend.exception.TaskNotFoundException;
-import io.github.LoucterSo.task_tracker_backend.form.task.TaskForm;
-import io.github.LoucterSo.task_tracker_backend.form.task.TaskResponseForm;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
+import io.github.LoucterSo.task_tracker_backend.exception.task.TaskNotFoundException;
+import io.github.LoucterSo.task_tracker_backend.form.task.TaskDto;
 import io.github.LoucterSo.task_tracker_backend.repository.task.TaskRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class TaskServiceImpl implements TaskService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(TaskServiceImpl.class);
     private final TaskRepository taskRepository;
 
     @Override
-    public TaskResponseForm saveTask(User user, TaskForm task) {
-
+    public TaskDto saveTask(User user, TaskDto task) {
         Task newTask = new Task();
-        newTask.setTitle(task.getTitle());
-        newTask.setDescription(task.getDescription());
+        newTask.setTitle(task.title());
+        newTask.setDescription(task.description());
         newTask.setDone(task.isDone());
         newTask.setUser(user);
         Task savedTask = taskRepository.save(newTask);
-        return new TaskResponseForm(savedTask);
+
+        return TaskDto.fromEntity(savedTask);
     }
 
     @Override
-    public TaskResponseForm updateTask(TaskForm task, Long taskId) {
+    public TaskDto updateTask(TaskDto task, Long taskId) {
         Task taskToUpdate= taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
 
-        taskToUpdate.setTitle(task.getTitle());
-        taskToUpdate.setDescription(task.getDescription());
+        taskToUpdate.setTitle(task.title());
+        taskToUpdate.setDescription(task.description());
         taskToUpdate.setDone(task.isDone());
         Task savedTask = taskRepository.save(taskToUpdate);
-        return new TaskResponseForm(savedTask);
+
+        return TaskDto.fromEntity(savedTask);
     }
 
     @Override
-    public TaskResponseForm deleteTaskById(Long taskId) {
+    public TaskDto deleteTaskById(Long taskId) {
         Task taskToDelete = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
         taskRepository.deleteById(taskId);
 
-        return new TaskResponseForm(taskToDelete);
-    }
-
-    private Optional<Task> findTaskById(Long taskId) {
-        return taskRepository.findById(taskId);
+        return TaskDto.fromEntity(taskToDelete);
     }
 
     @Override
     public boolean userHasTask(User user, Long taskId) {
-        Task task = findTaskById(taskId)
+        Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
 
         return task.getUser().equals(user);
     }
 
     @Override
-    public List<TaskResponseForm> getUserTasks(User user) {
+    public List<TaskDto> getUserTasks(User user) {
         return  user.getTasks().stream()
-                .map(TaskResponseForm::new)
+                .map(TaskDto::fromEntity)
                 .toList();
     }
 
     @Override
-    public TaskResponseForm getUserTaskById(User user, Long taskId) {
+    public TaskDto getUserTaskById(User user, Long taskId) {
         if (!userHasTask(user, taskId))
             throw new AuthenticationFailedException("User doesn't have rights to get this task");
 
-        Task task = findTaskById(taskId)
+        Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));
 
-        return new TaskResponseForm(task);
+        return TaskDto.fromEntity(task);
     }
 
 

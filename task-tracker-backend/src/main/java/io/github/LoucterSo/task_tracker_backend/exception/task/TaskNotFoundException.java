@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.exception;
+package io.github.LoucterSo.task_tracker_backend.exception.task;
 
 public class TaskNotFoundException extends RuntimeException {
     public TaskNotFoundException(Throwable cause) {

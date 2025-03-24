@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.*;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.RefreshTokenNotFoundException;
+import io.github.LoucterSo.task_tracker_backend.exception.user.UserAlreadyExists;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
@@ -17,8 +20,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,9 +33,8 @@ import java.util.Optional;
 import java.util.Random;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor @Slf4j
 public class AuthServiceImpl implements AuthService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AuthServiceImpl.class);
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
@@ -44,22 +45,17 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponseForm register(
             SignupForm signupForm,
             HttpServletResponse response,
-            BindingResult validationResult) {
+            BindingResult validationResult
+    ) {
+        log.info("Starting processing the registration method.");
+        checkValidation(validationResult);
 
-        LOGGER.info("Starting processing the registration method.");
-
-        if (validationResult.hasErrors()) {
-            LOGGER.error("Invalid data send.");
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-        }
-
-        final String email = signupForm.getEmail().trim().toLowerCase();
-
-        final String password = passwordEncoder.encode(signupForm.getPassword());
+        final String email = signupForm.email().trim().toLowerCase();
+        final String password = passwordEncoder.encode(signupForm.password());
 
         User user = User.builder()
-                .firstName(signupForm.getFirstName())
-                .lastName(signupForm.getLastName())
+                .firstName(signupForm.firstName())
+                .lastName(signupForm.lastName())
                 .email(email)
                 .password(password)
                 .authorities(new HashSet<>())
@@ -72,31 +68,25 @@ public class AuthServiceImpl implements AuthService {
             userService.saveUser(user);
             authorityService.save(authority);
         } catch (DataIntegrityViolationException ex) {
-            LOGGER.error("User passed login that already exists.");
+            log.error("User passed login that already exists.");
             throw new UserAlreadyExists("User with email %s already exists".formatted(email));
         }
 
-        LOGGER.info("New user created. Email: {}.", user.getEmail());
-
+        log.info("New user created. Email: {}.", user.getEmail());
         String[] tokens = createTokenPair(user);
         String refreshToken = tokens[1];
         String accessToken = tokens[0];
-
         createRefreshTokenCookie(response, refreshToken);
 
         try {
             kafkaTemplate.send("EMAIL_SENDING_TASKS", "" + new Random().nextInt(0, 3), objectMapper.writeValueAsString(new EmailDto(email, "Welcome!", "Hi!"))); //!!!!!
+            log.info("Message sent to kafka.");
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            log.error("Message wasn't sent.");
         }
 
-        LOGGER.info("Message sent to kafka");
-
-        LOGGER.info("Stopping processing the registration method.");
-
-        return AuthResponseForm.builder()
-                .accessToken(accessToken)
-                .build();
+        log.info("Stopping processing the registration method.");
+        return new AuthResponseForm(accessToken);
     }
 
     @Override
@@ -105,48 +95,36 @@ public class AuthServiceImpl implements AuthService {
             HttpServletResponse response,
             BindingResult validationResult
     ) {
+        log.info("Starting processing the login method.");
+        checkValidation(validationResult);
 
-        LOGGER.info("Starting processing the login method.");
-
-        if (validationResult.hasErrors()) {
-            LOGGER.error("Invalid data send.");
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-        }
-
-        final String email = loginForm.getEmail().trim().toLowerCase();
-        final String password = loginForm.getPassword();
+        final String email = loginForm.email().trim().toLowerCase();
+        final String password = loginForm.password();
 
         User user = userService.findByEmail(email).orElseThrow(
                 () -> {
-                    LOGGER.error("User passed email that doesn't exist. Email: {}.", email);
+                    log.error("User passed email that doesn't exist. Email: {}.", email);
                     return new AuthenticationFailedException("User with email %s doesn't exist".formatted(email));
                 });
 
         if (!passwordEncoder.matches(password, user.getPassword())) {
-            LOGGER.error("User passed wrong password.");
+            log.error("User passed wrong password.");
             throw new AuthenticationFailedException("Wrong password %s".formatted(password));
         }
 
-        LOGGER.info("User with passed data found.");
-
+        log.info("User with passed data found.");
         String[] tokens = createTokenPair(user);
         String refreshToken = tokens[1];
         String accessToken = tokens[0];
-
         createRefreshTokenCookie(response, refreshToken);
 
-        LOGGER.info("Stopping processing the login method.");
-
-        return AuthResponseForm.builder()
-                .accessToken(accessToken)
-                .build();
+        log.info("Stopping processing the login method.");
+        return new AuthResponseForm(accessToken);
     }
 
     @Override
-    public AuthResponseForm logout(HttpServletRequest request, HttpServletResponse response) {
-
-        LOGGER.info("Starting processing the logout method.");
-
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
+        log.info("Starting processing the logout method.");
         Cookie[] cookies = request.getCookies();
 
         if (cookies != null) {
@@ -161,25 +139,20 @@ public class AuthServiceImpl implements AuthService {
                         cookie.setPath("/");
                         response.addCookie(cookie);
                     });
-            LOGGER.info("Refresh token cookie deleted.");
+            log.info("Refresh token cookie deleted.");
         }
 
-        LOGGER.info("User is logged out.");
-
-        LOGGER.info("Stopping processing the logout method.");
-
-        return AuthResponseForm.builder()
-                .build();
+        log.info("User is logged out.");
+        log.info("Stopping processing the logout method.");
     }
 
     @Override
     public AuthResponseForm refreshToken(HttpServletRequest request) {
-
-        LOGGER.info("Starting processing the refresh token method.");
+        log.info("Starting processing the refresh token method.");
 
         Cookie[] cookies = Optional.ofNullable(request.getCookies())
                 .orElseThrow(() -> {
-                    LOGGER.error("Cookies not found.");
+                    log.error("Cookies not found.");
                     return new RefreshTokenNotFoundException("Refresh token cookie not found");
                 });
 
@@ -187,58 +160,54 @@ public class AuthServiceImpl implements AuthService {
                 .filter(c -> c.getName().equals("refreshToken"))
                 .findAny()
                 .orElseThrow(() -> {
-                    LOGGER.error("Refresh token cookie not found.");
+                    log.error("Refresh token cookie not found.");
                     return new RefreshTokenNotFoundException("Refresh token cookie not found");
                 });
 
         final String refreshToken = refreshCookie.getValue();
-
-        LOGGER.info("Refresh token found. Verifying token...");
-
+        log.info("Refresh token found. Verifying token...");
         final String jwtAccess;
+
         String email = jwtService.getSubjectFromToken(refreshToken)
                 .orElseThrow(() -> {
-                    LOGGER.error("Token doesn't have subject");
+                    log.error("Token doesn't have subject");
                     return new MalformedJwtException("Token doesn't have subject");
                 });
 
         User user = userService.findByEmail(email)
                 .orElseThrow(() -> {
-                    LOGGER.error("User with email {} doesn't exist", email);
+                    log.error("User with email {} doesn't exist", email);
                     return new AuthenticationFailedException("User with email %s doesn't exist".formatted(email));
                 });
 
-        LOGGER.info("Refresh token is valid.");
-
+        log.info("Refresh token is valid.");
         jwtAccess = jwtService.generateAccessToken(user);
+        log.info("New access toke generated.");
+        log.info("Stopping processing the refresh token method.");
+        return new AuthResponseForm(jwtAccess);
+    }
 
-        LOGGER.info("New access toke generated.");
-
-        LOGGER.info("Stopping processing the refresh token method.");
-
-        return AuthResponseForm.builder()
-                .accessToken(jwtAccess)
-                .build();
+    private void checkValidation(BindingResult validationResult) {
+        if (validationResult.hasErrors()) {
+            log.error("Invalid data sent.");
+            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
+        }
     }
 
     private void createRefreshTokenCookie(HttpServletResponse response, String jwtRefresh) {
-
         Cookie refreshTokenCookie = new Cookie("refreshToken", jwtRefresh);
         refreshTokenCookie.setMaxAge((int) jwtService.getExpFromToken(jwtRefresh).getTime());
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setSecure(true);
         response.addCookie(refreshTokenCookie);
-
-        LOGGER.info("Refresh token passed to cookies.");
+        log.info("Refresh token passed to cookies.");
     }
 
     private String[] createTokenPair(User user) {
         String jwtAccess = jwtService.generateAccessToken(user);
         String jwtRefresh = jwtService.generateRefreshToken(user);
-
-        LOGGER.info("Access and refresh tokens created.");
-
+        log.info("Access and refresh tokens created.");
         return new String[]{jwtAccess, jwtRefresh};
     }
 

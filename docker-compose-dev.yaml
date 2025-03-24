@@ -17,8 +17,8 @@ services:
       dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_MAIL_USERNAME: loc@gmail.com
-      SPRING_MAIL_PASSWORD: 123
+      SPRING_MAIL_USERNAME: !your-mail
+      SPRING_MAIL_PASSWORD: !your-password
     depends_on:
       - kafka
   
@@ -47,8 +47,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: 123
       SCHEDULER_PASSWORD: 123
       SCHEDULER_EMAIL: scheduler@gmail.com
-      JWT_REFRESH_LIFETIME: 900000
-      JWT_ACCESS_LIFETIME: 2592000000
+      JWT_REFRESH_LIFETIME: 2592000000
+      JWT_ACCESS_LIFETIME: 900000
       JWT_SECRET: 5u8ADYq3thVmYq3t6w9zCEHxADGYq3thVmYq3t6w9zCEHxDGGKbPeSVmYq3thVmYq3t6Yq3thVmYq3t6w9zCEHxADGPeShVmVmYq3tYq3t6w9zCDGKbPeSw9zCEHxAD3t6w9zCEHGmYVmYq3tq3t6w9zCE
     depends_on:
       - postgresdb

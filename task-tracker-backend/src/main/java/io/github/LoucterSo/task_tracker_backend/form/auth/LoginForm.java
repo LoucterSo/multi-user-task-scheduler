@@ -3,12 +3,10 @@ package io.github.LoucterSo.task_tracker_backend.form.auth;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-@Data
-@Builder
-@AllArgsConstructor
-public class LoginForm {
-    @NotBlank(message = "Email cannot be empty")
-    private final String email;
-    @NotBlank(message = "Password cannot be empty")
-    private final String password;
+public record LoginForm(
+        @NotBlank(message = "Email cannot be empty") String email,
+
+        @NotBlank(message = "Password cannot be empty") String password
+) {
+
 }

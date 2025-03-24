@@ -15,10 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,47 +24,41 @@ public class AuthRestController {
     private final AuthService authService;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<AuthResponseForm> register(
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public AuthResponseForm register(
             @Valid @RequestBody SignupForm signupForm,
             BindingResult validationResult,
             HttpServletResponse response
     ) {
 
-        AuthResponseForm responseForm = authService.register(signupForm, response, validationResult);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(responseForm);
+        return authService.register(signupForm, response, validationResult);
     }
 
     @PostMapping(value = "/login")
-    public ResponseEntity<AuthResponseForm> login(
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public AuthResponseForm login(
             @Valid @RequestBody LoginForm loginForm,
             BindingResult validationResult,
             HttpServletResponse response
     ) {
 
-        AuthResponseForm responseForm = authService.login(loginForm, response, validationResult);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseForm);
-
+        return authService.login(loginForm, response, validationResult);
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<AuthResponseForm> logout(HttpServletRequest request, HttpServletResponse response) {
+    @ResponseStatus(HttpStatus.OK)
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
 
-        AuthResponseForm responseForm = authService.logout(request, response);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseForm);
+        authService.logout(request, response);
     }
 
     @PostMapping("/refresh-token")
-    public ResponseEntity<AuthResponseForm> refreshToken(HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public AuthResponseForm refreshToken(HttpServletRequest request) {
 
-        AuthResponseForm responseForm = authService.refreshToken(request);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseForm);
+        return authService.refreshToken(request);
     }
 }

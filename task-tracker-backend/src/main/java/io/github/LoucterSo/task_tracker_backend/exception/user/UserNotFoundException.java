@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.exception;
+package io.github.LoucterSo.task_tracker_backend.exception.user;
 
 public class UserNotFoundException extends RuntimeException {
 

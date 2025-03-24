@@ -15,7 +15,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
   datasource:
-    url: jdbc:postgresql://localhost:5432/backend
+    url: jdbc:postgresql://postgres:5432/backend
   kafka:
     bootstrap-servers: kafka:9092
 

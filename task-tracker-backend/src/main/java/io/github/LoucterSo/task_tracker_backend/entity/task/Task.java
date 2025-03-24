@@ -1,5 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.entity.task;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,8 +11,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tasks")
-@AllArgsConstructor @NoArgsConstructor
-@Data
+@Data @Builder
+@NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Task {
     @Id
@@ -25,6 +26,7 @@ public class Task {
     @Column
     private String description;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;

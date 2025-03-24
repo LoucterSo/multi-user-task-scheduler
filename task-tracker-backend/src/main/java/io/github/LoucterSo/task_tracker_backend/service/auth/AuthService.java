@@ -11,6 +11,6 @@ public interface AuthService {
 
     AuthResponseForm register(SignupForm signupForm, HttpServletResponse response, BindingResult validationResult);
     AuthResponseForm login(LoginForm loginForm, HttpServletResponse response, BindingResult validationResult);
-    AuthResponseForm logout(HttpServletRequest request, HttpServletResponse response);
+    void logout(HttpServletRequest request, HttpServletResponse response);
     AuthResponseForm refreshToken(HttpServletRequest request);
 }
