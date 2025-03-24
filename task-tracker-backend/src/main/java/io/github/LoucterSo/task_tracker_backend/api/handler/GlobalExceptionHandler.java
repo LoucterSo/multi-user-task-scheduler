@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
             fields.add("Field %s and value %s: %s"
                     .formatted(f.getField(), f.getRejectedValue(), f.getDefaultMessage()));
 
-        return new ValidationErrorResponse(System.currentTimeMillis(), fields);
+        return new ValidationErrorResponse(fields, System.currentTimeMillis());
     }
 
     @ExceptionHandler(exception =
