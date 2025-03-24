@@ -16,6 +16,9 @@ spring:
       ddl-auto: create-drop
   datasource:
     url: jdbc:postgresql://postgres:5432/backend
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
   kafka:
     bootstrap-servers: kafka:9092
 

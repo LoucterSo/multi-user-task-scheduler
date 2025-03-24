@@ -17,7 +17,7 @@ public class Authority implements GrantedAuthority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id")
-    private Integer id;
+    private Long id;
 
     @JsonIgnore
     @Fetch(FetchMode.SELECT)

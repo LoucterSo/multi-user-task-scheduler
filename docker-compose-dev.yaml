@@ -29,7 +29,7 @@ services:
       dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SCHEDULER_PASSWORD: 123
+      SCHEDULER_PASSWORD: 123456789Gg
       SCHEDULER_EMAIL: scheduler@gmail.com
     depends_on:
       - kafka
