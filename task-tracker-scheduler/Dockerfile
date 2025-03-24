@@ -7,5 +7,4 @@ RUN mvn clean package -DskipTests
 FROM eclipse-temurin:17-jdk
 WORKDIR /
 COPY --from=build /target/*.jar task-tracker-scheduler.jar
-EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "task-tracker-scheduler.jar"]
