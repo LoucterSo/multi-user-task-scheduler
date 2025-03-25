@@ -9,8 +9,8 @@ import org.springframework.validation.BindingResult;
 
 public interface AuthService {
 
-    AuthResponseForm register(SignupForm signupForm, HttpServletResponse response, BindingResult validationResult);
-    AuthResponseForm login(LoginForm loginForm, HttpServletResponse response, BindingResult validationResult);
+    AuthResponseForm register(SignupForm signupForm, HttpServletResponse response);
+    AuthResponseForm login(LoginForm loginForm, HttpServletResponse response);
     void logout(HttpServletRequest request, HttpServletResponse response);
     AuthResponseForm refreshToken(HttpServletRequest request);
 }

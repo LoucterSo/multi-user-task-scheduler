@@ -3,7 +3,6 @@ package io.github.LoucterSo.task_tracker_backend.api.controller.task;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.user.UserNotFoundException;
-import io.github.LoucterSo.task_tracker_backend.exception.ValidationFoundErrorsException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskDto;
 import io.github.LoucterSo.task_tracker_backend.service.task.TaskService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
@@ -12,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -47,15 +45,9 @@ public class TaskRestController {
     @ResponseBody
     public TaskDto createTask(
             @Valid @RequestBody TaskDto task,
-            BindingResult validationResult,
             @AuthenticationPrincipal User currentUser
     ) {
-
-        if (validationResult.hasErrors())
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-
         return taskService.saveTask(currentUser, task);
-
     }
 
     @PutMapping("/{taskId}")
@@ -64,13 +56,8 @@ public class TaskRestController {
     public TaskDto updateTask(
             @PathVariable Long taskId,
             @Valid @RequestBody TaskDto task,
-            BindingResult validationResult,
             @AuthenticationPrincipal User currentUser
     ) {
-
-        if (validationResult.hasErrors())
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-
         if (!taskService.userHasTask(currentUser, taskId))
             throw new AuthenticationFailedException("User doesn't have rights to change this task");
 

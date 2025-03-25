@@ -12,13 +12,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ControllerAdvice @Slf4j
 public class GlobalExceptionHandler {
@@ -41,17 +44,14 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler
-    public ValidationErrorResponse handleValidationHasErrorsException(ValidationFoundErrorsException ex) {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ValidationErrorResponse handleValidationHasErrorsException(MethodArgumentNotValidException ex) {
 
-        List<FieldError> fieldErrors = ex.getFields();
-        List<String> fields = new ArrayList<>();
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage()));
 
-        for (FieldError f : fieldErrors)
-            fields.add("Field %s and value %s: %s"
-                    .formatted(f.getField(), f.getRejectedValue(), f.getDefaultMessage()));
-
-        return new ValidationErrorResponse(fields, System.currentTimeMillis());
+        return new ValidationErrorResponse(errors, System.currentTimeMillis());
     }
 
     @ExceptionHandler(exception =

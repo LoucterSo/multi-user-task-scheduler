@@ -44,11 +44,9 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthResponseForm register(
             SignupForm signupForm,
-            HttpServletResponse response,
-            BindingResult validationResult
+            HttpServletResponse response
     ) {
         log.info("Starting processing the registration method.");
-        checkValidation(validationResult);
 
         final String email = signupForm.email().trim().toLowerCase();
         final String password = passwordEncoder.encode(signupForm.password());
@@ -92,11 +90,9 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponseForm login(
             LoginForm loginForm,
-            HttpServletResponse response,
-            BindingResult validationResult
+            HttpServletResponse response
     ) {
         log.info("Starting processing the login method.");
-        checkValidation(validationResult);
 
         final String email = loginForm.email().trim().toLowerCase();
         final String password = loginForm.password();
@@ -185,13 +181,6 @@ public class AuthServiceImpl implements AuthService {
         log.info("New access toke generated.");
         log.info("Stopping processing the refresh token method.");
         return new AuthResponseForm(jwtAccess);
-    }
-
-    private void checkValidation(BindingResult validationResult) {
-        if (validationResult.hasErrors()) {
-            log.error("Invalid data sent.");
-            throw new ValidationFoundErrorsException(validationResult.getFieldErrors());
-        }
     }
 
     private void createRefreshTokenCookie(HttpServletResponse response, String jwtRefresh) {

@@ -1,6 +1,5 @@
-package io.github.LoucterSo.task_tracker_backend.api.controller.user;
+package io.github.LoucterSo.task_tracker_backend.api.controller.auth;
 
-import io.github.LoucterSo.task_tracker_backend.exception.ValidationFoundErrorsException;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
@@ -10,8 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -28,11 +25,10 @@ public class AuthRestController {
     @ResponseBody
     public AuthResponseForm register(
             @Valid @RequestBody SignupForm signupForm,
-            BindingResult validationResult,
             HttpServletResponse response
     ) {
 
-        return authService.register(signupForm, response, validationResult);
+        return authService.register(signupForm, response);
     }
 
     @PostMapping(value = "/login")
@@ -40,11 +36,10 @@ public class AuthRestController {
     @ResponseBody
     public AuthResponseForm login(
             @Valid @RequestBody LoginForm loginForm,
-            BindingResult validationResult,
             HttpServletResponse response
     ) {
 
-        return authService.login(loginForm, response, validationResult);
+        return authService.login(loginForm, response);
     }
 
     @PostMapping("/logout")

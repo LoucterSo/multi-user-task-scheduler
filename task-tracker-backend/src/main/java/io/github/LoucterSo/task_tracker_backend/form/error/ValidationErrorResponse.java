@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.form.error;
 
-import java.util.List;
+import java.util.Map;
 
-public record ValidationErrorResponse(List<String> errorFields, long timeStamp) {
+public record ValidationErrorResponse(Map<String, String> errorFields, long timeStamp) {
 
 }
