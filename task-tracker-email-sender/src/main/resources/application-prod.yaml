@@ -29,6 +29,13 @@ spring:
           timeout: 5000
           writetimeout: 5000
 
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka-server:8761/eureka
+      fetch-registry: true
+      register-with-eureka: true
+
 logging:
   level:
     org:
@@ -44,3 +51,6 @@ logging:
             sql:
               BasicBinder: error
         SQL: error
+
+server:
+  port: '8081'

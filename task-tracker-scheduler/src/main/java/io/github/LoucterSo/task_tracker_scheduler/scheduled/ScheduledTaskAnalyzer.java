@@ -2,10 +2,7 @@ package io.github.LoucterSo.task_tracker_scheduler.scheduled;
 
 import io.github.LoucterSo.task_tracker_scheduler.form.email.EmailDto;
 import io.github.LoucterSo.task_tracker_scheduler.form.user.UserDto;
-import io.github.LoucterSo.task_tracker_scheduler.service.AuthService;
-import io.github.LoucterSo.task_tracker_scheduler.service.EmailService;
-import io.github.LoucterSo.task_tracker_scheduler.service.KafkaService;
-import io.github.LoucterSo.task_tracker_scheduler.service.UserTaskService;
+import io.github.LoucterSo.task_tracker_scheduler.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,8 +15,7 @@ import java.util.*;
 @RequiredArgsConstructor
 @Slf4j
 public class ScheduledTaskAnalyzer {
-    private final AuthService authService;
-    private final UserTaskService userTaskService;
+    private final BackendService backendService;
     private final EmailService emailService;
     private final KafkaService kafkaService;
 
@@ -31,8 +27,8 @@ public class ScheduledTaskAnalyzer {
     @Scheduled(cron = "0 0 0 * * ?")
     public void analyzeAndSendTaskReports() {
         try {
-            String accessToken = authService.authenticate(schedulerEmail, schedulerPassword);
-            List<UserDto> usersWithTasks = userTaskService.getUsersWithTasks(accessToken);
+            String accessToken = backendService.authenticate(schedulerEmail, schedulerPassword);
+            List<UserDto> usersWithTasks = backendService.getUsersWithTasks(accessToken);
             List<EmailDto> emailsToSend = emailService.analyzeTasks(usersWithTasks);
             emailsToSend.forEach(kafkaService::sendEmail);
         } catch (Exception e) {
