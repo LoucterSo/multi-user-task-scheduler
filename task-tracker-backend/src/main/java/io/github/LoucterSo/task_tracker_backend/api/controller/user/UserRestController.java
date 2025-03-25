@@ -1,7 +1,6 @@
 package io.github.LoucterSo.task_tracker_backend.api.controller.user;
 
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.exception.user.UserNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.user.UserDto;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
