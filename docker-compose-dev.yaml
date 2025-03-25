@@ -10,56 +10,24 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
-  task-tracker-email-sender:
-    container_name: email-sender
+  eureka-server:
     build:
-      context: ./task-tracker-email-sender
-      dockerfile: Dockerfile
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_MAIL_USERNAME: !your-mail
-      SPRING_MAIL_PASSWORD: !your-password
-    depends_on:
-      - kafka
-  
-  task-tracker-scheduler:
-    container_name: scheduler
-    build:
-      context: ./task-tracker-scheduler
-      dockerfile: Dockerfile
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SCHEDULER_PASSWORD: 123456789Gg
-      SCHEDULER_EMAIL: scheduler@gmail.com
-    depends_on:
-      - kafka
-
-  task-tracker-backend:
-    container_name: backend
-    build:
-      context: ./task-tracker-backend
+      context: ./eureka-server
       dockerfile: Dockerfile
     ports:
-      - '8080:8080'
+      - '8761:8761'
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATASOURCE_USERNAME: admin
-      SPRING_DATASOURCE_PASSWORD: 123
-      SCHEDULER_PASSWORD: 123
-      SCHEDULER_EMAIL: scheduler@gmail.com
-      JWT_REFRESH_LIFETIME: 2592000000
-      JWT_ACCESS_LIFETIME: 900000
-      JWT_SECRET: 5u8ADYq3thVmYq3t6w9zCEHxADGYq3thVmYq3t6w9zCEHxDGGKbPeSVmYq3thVmYq3t6Yq3thVmYq3t6w9zCEHxADGPeShVmVmYq3tYq3t6w9zCDGKbPeSw9zCEHxAD3t6w9zCEHGmYVmYq3tq3t6w9zCE
-    depends_on:
-      - postgresdb
-      - task-tracker-email-sender
-      - task-tracker-scheduler
-  
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      timeout: 2s
+      retries: 3
+
   kafka:
     image: bitnami/kafka
     container_name: kafka
     ports:
-      - "9092:9092"
+      - '9092:9092'
     volumes:
       - kafka-data:/bitnami
     environment:
@@ -76,6 +44,60 @@ services:
       KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: "true"
       ALLOW_PLAINTEXT_LISTENER: "yes"
     restart: unless-stopped
+
+  task-tracker-email-sender:
+    container_name: email-sender
+    build:
+      context: ./task-tracker-email-sender
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SCHEDULER_PASSWORD: 123456789Gg
+      SCHEDULER_EMAIL: scheduler@gmail.com
+    depends_on:
+      kafka:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy
+
+  task-tracker-backend:
+    container_name: backend
+    build:
+      context: ./task-tracker-backend
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: 123
+      SCHEDULER_PASSWORD: 123456789Gg
+      SCHEDULER_EMAIL: scheduler@gmail.com
+      JWT_REFRESH_LIFETIME: 2592000000
+      JWT_ACCESS_LIFETIME: 900000
+      JWT_SECRET: 5u8ADYq3thVmYq3t6w9zCEHxADGYq3thVmYq3t6w9zCEHxDGGKbPeSVmYq3thVmYq3t6Yq3thVmYq3t6w9zCEHxADGPeShVmVmYq3tYq3t6w9zCDGKbPeSw9zCEHxAD3t6w9zCEHGmYVmYq3tq3t6w9zCE
+    depends_on:
+      postgresdb:
+        condition: service_started
+      task-tracker-email-sender:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy
+
+  task-tracker-scheduler:
+    container_name: scheduler
+    build:
+      context: ./task-tracker-scheduler
+      dockerfile: Dockerfile
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SCHEDULER_PASSWORD: 123456789Gg
+      SCHEDULER_EMAIL: scheduler@gmail.com
+    depends_on:
+      task-tracker-backend:
+        condition: service_started
+      eureka-server:
+        condition: service_healthy 
 
 volumes:
   postgres-data:
