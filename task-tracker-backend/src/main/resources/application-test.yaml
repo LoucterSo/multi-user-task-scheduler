@@ -1,0 +1,24 @@
+spring:
+  main:
+    banner-mode: 'off'
+  datasource:
+    url: jdbc:tc:postgresql:16-alpine:///integration-tests-db
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      schema-locations: classpath:db/schema/schema.sql
+  liquibase:
+    enabled: false
+
+scheduler:
+  password: 123456789Gg
+  email: scheduler@gmail.com
+
+jwt:
+  refresh:
+    lifetime: 2592000000
+  access:
+    lifetime: 900000
+  secret: 5u8ADYq3thVmYq3t6w9zCEHxADGYq3thVmYq3t6w9zCEHxDGGKbPeSVmYq3thVmYq3t6Yq3thVmYq3t6w9zCEHxADGPeShVmVmYq3tYq3t6w9zCDGKbPeSw9zCEHxAD3t6w9zCEHGmYVm
