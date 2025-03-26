@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.user.controller;
+package io.github.LoucterSo.task_tracker_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.LoucterSo.task_tracker_backend.api.controller.user.UserRestController;
@@ -62,38 +62,45 @@ public class UserRestControllerTest {
             .enabled(true)
             .build();
 
-    private final Set<Task> tasks = Set.of(
-            Task.builder()
-                    .id(1L)
-                    .title("Title1")
-                    .description("Desc1")
-                    .isDone(false)
-                    .completionTime(null).build(),
-            Task.builder()
-                    .id(2L)
-                    .title("Title2")
-                    .description("Desc2")
-                    .isDone(false)
-                    .completionTime(null).build()
-    );
+    private final Set<Task> tasks;
+    private final List<UserWithTasksDto> allUsers;
+    {
+        Task task = new Task();
+        task.setId(1L);
+        task.setTitle("Title1");
+        task.setDescription("Desc1");
+        task.setDone(false);
 
-    private final List<UserWithTasksDto> allUsers = List.of(
-            UserWithTasksDto.fromEntity(User.builder()
-                    .id(TEST_ID + 1)
-                    .firstName(TEST_FIRST_NAME)
-                    .lastName(TEST_LAST_NAME)
-                    .email(TEST_EMAIL)
-                    .tasks(tasks)
-                    .enabled(true)
-                    .build()),
-            UserWithTasksDto.fromEntity(User.builder()
-                    .id(TEST_ID + 2)
-                    .firstName(TEST_FIRST_NAME)
-                    .lastName(TEST_LAST_NAME)
-                    .email(TEST_EMAIL)
-                    .enabled(true)
-                    .build())
-    );
+        Task task1 = new Task();
+        task1.setId(2L);
+        task1.setTitle("Title2");
+        task1.setDescription("Desc2");
+        task1.setDone(false);
+
+        tasks = Set.of(task, task1);
+
+        User user = User.builder()
+                .id(TEST_ID + 1)
+                .firstName(TEST_FIRST_NAME)
+                .lastName(TEST_LAST_NAME)
+                .email(TEST_EMAIL)
+                .tasks(tasks)
+                .enabled(true)
+                .build();
+
+        User user1 = User.builder()
+                .id(TEST_ID + 2)
+                .firstName(TEST_FIRST_NAME)
+                .lastName(TEST_LAST_NAME)
+                .email(TEST_EMAIL)
+                .enabled(true)
+                .build();
+
+        allUsers = List.of(
+                UserWithTasksDto.fromEntity(user),
+                UserWithTasksDto.fromEntity(user1)
+        );
+    }
 
     @Nested
     class GetCurrentUserData {

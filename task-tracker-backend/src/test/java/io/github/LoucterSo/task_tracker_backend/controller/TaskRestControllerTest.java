@@ -1,4 +1,4 @@
-package io.github.LoucterSo.task_tracker_backend.task.controller;
+package io.github.LoucterSo.task_tracker_backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.LoucterSo.task_tracker_backend.api.controller.task.TaskRestController;

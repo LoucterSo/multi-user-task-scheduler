@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tasks")
-@Data @Builder
+@Data
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Task {
