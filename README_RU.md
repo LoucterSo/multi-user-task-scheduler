@@ -40,8 +40,8 @@
 
 ```mermaid
 erDiagram
-    users ||--o{ roles : "has"
-    users ||--o{ tasks : "creates"
+    users ||--o{ roles : "имеет"
+    users ||--o{ tasks : "создает"
     
     users {
         bigint user_id PK
