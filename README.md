@@ -94,6 +94,7 @@ docker-compose -f docker-compose-dev.yaml up --build
 docker-compose -f docker-compose-dev.yaml up
 ```
 ### 3. Production mode:
+*Do not forget to add the .env file with the necessary properties to the root of the project*
 ```bash
 docker-compose -f docker-compose-prod.yaml up
 ```
