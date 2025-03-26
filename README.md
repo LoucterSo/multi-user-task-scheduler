@@ -37,7 +37,11 @@
 | **Testing** | JUnit 5, Mockito, Testcontainers |
 
 ## 📊 Database Schema
-![ER Diagram](docs/er-diagram.md)
+
+<div align="center">
+  <img src="docs/er-diagram.png" alt="Entity-Relationship Diagram" width="600"/>
+  <p><em>Рисунок 1. ER-диаграмма базы данных (PostgreSQL)</em></p>
+</div>
 
 ## ⚡ Quick Start
 1. Clone repository:
