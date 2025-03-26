@@ -1,10 +1,17 @@
 package io.github.LoucterSo.task_tracker_backend.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.LoucterSo.task_tracker_backend.form.error.ErrorResponse;
 import io.github.LoucterSo.task_tracker_backend.security.filter.JwtFilter;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,7 +23,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
 
 import static io.github.LoucterSo.task_tracker_backend.entity.user.Authority.Roles.*;
 
@@ -56,6 +62,16 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptions -> exceptions
+                        .accessDeniedHandler((HttpServletRequest request, HttpServletResponse response,
+                                              AccessDeniedException ex) -> {
+                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+                            response.setStatus(HttpStatus.FORBIDDEN.value());
+
+                            ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
+                            new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
+                        })
+                )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(config ->
                         config
