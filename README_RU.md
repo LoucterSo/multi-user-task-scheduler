@@ -94,6 +94,7 @@ docker-compose -f docker-compose-dev.yaml up --build
 docker-compose -f docker-compose-dev.yaml up
 ```
 ### 3. В режиме продакшена:
+*Не забудь добавить .env файл с нужными значениями в корень проекта*
 ```bash
 docker-compose -f docker-compose-prod.yaml up
 ```
