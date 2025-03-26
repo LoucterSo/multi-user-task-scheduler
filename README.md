@@ -3,13 +3,13 @@
 *A web application for multi-user task management*
 
 ## 📌 Содержание
-- [Key Features](#-основные-функции)
-- [Tech Stack](#-технологический-стек)
-- [Database Schema](#-схема-базы-данных)
-- [Quick Start](#-быстрый-старт)
-- [Testing](#-тестирование)
-- [Deployment](#-развертывание)
-- [Contacts](#-контакты)
+- [Key Features](#-key-features)
+- [Tech Stack](#-tech-stack)
+- [Database Schema](#-database-schema)
+- [Quick Start](#-quick-start)
+- [Testing](#-testing)
+- [Deployment](#-deployment)
+- [Contacts](#-contacts)
 
 ## 🌟 Key Features
 ### User Management:
