@@ -1,0 +1,66 @@
+hibernate:
+  format_sql: 'false'
+  show_sql: 'false'
+
+spring:
+  application:
+    name: task-tracker-backend
+  main:
+    banner-mode: 'off'
+    log-startup-info: false
+  jpa:
+    properties:
+      hibernate:
+        format-sql: 'false'
+    hibernate:
+      ddl-auto: validate
+  datasource:
+    url: jdbc:postgresql://localhost:5432/backend
+    username: !DB_USERNAME
+    password: !DB_PASSWORD
+  liquibase:
+    default-schema: public
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.json
+  kafka:
+    bootstrap-servers: localhost:9092
+
+scheduler:
+  email: scheduler@gmail.com
+  password: 123456789Gg
+
+jwt:
+  refresh:
+    lifetime: 2592000000
+  access:
+    lifetime: 900000
+  secret: !SECRET
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+      fetch-registry: true
+      register-with-eureka: true
+
+logging:
+  level:
+    org:
+      springframework:
+        web: error
+        security:
+          nodeValue: error
+          web:
+            FilterChainProxy: error
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: error
+        SQL: error
+
+server:
+  servlet:
+    context-path: /api/v1
+  port: '8080'
+

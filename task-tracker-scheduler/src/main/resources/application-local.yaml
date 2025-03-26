@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: task-tracker-scheduler
+  main:
+    log-startup-info: false
+    banner-mode: 'off'
+  kafka:
+    bootstrap-servers: localhost:9092
+
+scheduler:
+  email: scheduler@gmail.com
+  password: 123456789Gg
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+      fetch-registry: true
+      register-with-eureka: true
+
+logging:
+  level:
+    org:
+      springframework:
+        web: error
+        security:
+          nodeValue: error
+          web:
+            FilterChainProxy: error
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: error
+        SQL: error
+
+server:
+  port: '8082'

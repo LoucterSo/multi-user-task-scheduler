@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: task-tracker-email-sender
+  main:
+    log-startup-info: false
+    banner-mode: 'off'
+  kafka:
+    bootstrap-servers: localhost:9092
+    listener:
+      ack-mode: record
+    consumer:
+      group-id: kafka-core-consumer-group
+      auto-offset-reset: earliest
+    properties:
+      metrics:
+        num:
+          samples: 4
+  mail:
+    username: !MAIL_USERNAME
+    password: !MAIL_PASSWORD
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+      fetch-registry: true
+      register-with-eureka: true
+
+logging:
+  level:
+    org:
+      springframework:
+        web: error
+        security:
+          nodeValue: error
+          web:
+            FilterChainProxy: error
+      hibernate:
+        type:
+          descriptor:
+            sql:
+              BasicBinder: error
+        SQL: error
+
+server:
+  port: '8081'
