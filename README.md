@@ -25,7 +25,7 @@
 - ✉️ Welcome email
 - 🔔 Daily midnight reminders:
   - Summary of completed tasks
-  - Upcoming task alerts
+  - Upcoming tasks
 
 ## 🛠 Tech Stack
 | Category       | Technologies                          |
@@ -54,7 +54,6 @@ docker-compose -f docker-compose-dev.yaml up --build
 ```
 
 ## 🐳 Deployment
-Каждый сервис имеет:
 ### 1. Local execution (without Docker):
 - application-local.yaml
 ### 2. Development mode:
