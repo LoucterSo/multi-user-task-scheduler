@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_scheduler.scheduled;
 
 import io.github.LoucterSo.task_tracker_scheduler.form.email.EmailDto;
-import io.github.LoucterSo.task_tracker_scheduler.form.user.UserDto;
+import io.github.LoucterSo.task_tracker_scheduler.form.user.UserWithTasksDto;
 import io.github.LoucterSo.task_tracker_scheduler.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,11 +28,11 @@ public class ScheduledTaskAnalyzer {
     public void analyzeAndSendTaskReports() {
         try {
             String accessToken = backendService.authenticate(schedulerEmail, schedulerPassword);
-            List<UserDto> usersWithTasks = backendService.getUsersWithTasks(accessToken);
+            List<UserWithTasksDto> usersWithTasks = backendService.getUsersWithTasks(accessToken);
             List<EmailDto> emailsToSend = emailService.analyzeTasks(usersWithTasks);
             emailsToSend.forEach(kafkaService::sendEmail);
         } catch (Exception e) {
-            log.error("Error during task analysis and email sending", e);
+            log.error("Error during task analysis and email sending. {}", e.getMessage());
         }
     }
 }
