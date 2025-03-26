@@ -1,7 +1,5 @@
 package io.github.LoucterSo.task_tracker_backend.service.auth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
@@ -10,9 +8,9 @@ import io.github.LoucterSo.task_tracker_backend.exception.user.UserAlreadyExists
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
-import io.github.LoucterSo.task_tracker_backend.form.email.EmailDto;
 import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
+import io.github.LoucterSo.task_tracker_backend.service.kafka.KafkaService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.Cookie;
@@ -21,14 +19,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor @Slf4j
@@ -37,8 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthorityService authorityService;
     private final JwtService jwtService;
-    private final KafkaTemplate<String, String> kafkaTemplate;
-    private final ObjectMapper objectMapper;
+    private final KafkaService kafkaService;
 
     public AuthResponseForm register(
             SignupForm signupForm,
@@ -74,12 +69,8 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = tokens[0];
         createRefreshTokenCookie(response, refreshToken);
 
-        try {
-            kafkaTemplate.send("EMAIL_SENDING_TASKS", "" + new Random().nextInt(0, 3), objectMapper.writeValueAsString(new EmailDto(email, "Welcome!", "Hi!"))); //!!!!!
-            log.info("Message sent to kafka.");
-        } catch (JsonProcessingException e) {
-            log.error("Message wasn't sent.");
-        }
+        kafkaService.sendWelcomeEmail(email, signupForm.firstName().trim());
+        log.info("Message sent to kafka.");
 
         log.info("Stopping processing the registration method.");
         return new AuthResponseForm(accessToken);
