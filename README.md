@@ -2,7 +2,7 @@
 
 *A web application for multi-user task management*
 
-## 📌 Содержание
+## 📌 Table of Contents
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
 - [Database Schema](#-database-schema)
@@ -16,14 +16,14 @@
 - ✅ Registration and authentication (JWT)
 - 🔐 Role-based access control
   
-### Работа с задачами
+### Task Management
 - ➕ Create/edit tasks
 - ✔️ Mark tasks as completed
 - 🗑️ Delete tasks
 
-### Умные оповещения по почте
+### Smart Notifications
 - ✉️ Welcome email
-- 🔔 Daily midnight reminders:
+- 🔔 Daily midnight email reminders:
   - Summary of completed tasks
   - Upcoming tasks
 
