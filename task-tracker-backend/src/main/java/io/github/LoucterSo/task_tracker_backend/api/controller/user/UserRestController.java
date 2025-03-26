@@ -1,7 +1,8 @@
 package io.github.LoucterSo.task_tracker_backend.api.controller.user;
 
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.form.user.UserDto;
+import io.github.LoucterSo.task_tracker_backend.form.user.UserWithTasksDto;
+import io.github.LoucterSo.task_tracker_backend.form.user.UserWithoutTasks;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,15 +22,15 @@ public class UserRestController {
     @GetMapping("/current")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public UserDto getCurrentUserData(@AuthenticationPrincipal User currentUser) {
+    public UserWithoutTasks getCurrentUserData(@AuthenticationPrincipal User currentUser) {
 
-        return new UserDto(currentUser.getId(), currentUser.getEmail(), currentUser.getFirstName(), currentUser.getLastName(), null);
+        return UserWithoutTasks.fromEntity(currentUser);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<UserDto> getAllUsersWithTasks() {
+    public List<UserWithTasksDto> getAllUsersWithTasks() {
 
         return userService.getAllUsersWithTasks();
     }

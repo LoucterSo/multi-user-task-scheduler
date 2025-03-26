@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.service.user;
 
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.form.user.UserDto;
+import io.github.LoucterSo.task_tracker_backend.form.user.UserWithTasksDto;
 import io.github.LoucterSo.task_tracker_backend.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getAllUsersWithTasks() {return userRepository.getAllUsersWithTasks().stream().map(UserDto::fromEntity).toList();}
+    public List<UserWithTasksDto> getAllUsersWithTasks() {return userRepository.getAllUsersWithTasks().stream().map(UserWithTasksDto::fromEntity).toList();}
 
     @Override
     public Optional<User> findById(Long userId) {

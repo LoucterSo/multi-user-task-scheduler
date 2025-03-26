@@ -2,7 +2,7 @@ package io.github.LoucterSo.task_tracker_backend.service.task;
 
 import io.github.LoucterSo.task_tracker_backend.entity.task.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthorizationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.task.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskDto;
 import io.github.LoucterSo.task_tracker_backend.repository.task.TaskRepository;
@@ -67,8 +67,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public TaskDto getUserTaskById(User user, Long taskId) {
-        if (!userHasTask(user, taskId))
-            throw new AuthenticationFailedException("User doesn't have rights to get this task");
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task with id %s not found".formatted(taskId)));

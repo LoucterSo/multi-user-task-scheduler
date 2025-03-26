@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.exception.*;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.RefreshTokenNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.user.UserAlreadyExists;
@@ -25,7 +24,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
 
 import java.util.Arrays;
 import java.util.HashSet;

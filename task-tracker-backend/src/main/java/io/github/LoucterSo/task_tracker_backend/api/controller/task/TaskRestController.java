@@ -1,7 +1,7 @@
 package io.github.LoucterSo.task_tracker_backend.api.controller.task;
 
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthorizationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.user.UserNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskDto;
 import io.github.LoucterSo.task_tracker_backend.service.task.TaskService;
@@ -40,6 +40,10 @@ public class TaskRestController {
             @PathVariable Long taskId,
             @AuthenticationPrincipal User currentUser
     ) {
+
+        if (!taskService.userHasTask(currentUser, taskId))
+            throw new AuthorizationFailedException("User doesn't have rights to get this task");
+
         return taskService.getUserTaskById(currentUser, taskId);
     }
 
@@ -62,7 +66,7 @@ public class TaskRestController {
             @AuthenticationPrincipal User currentUser
     ) {
         if (!taskService.userHasTask(currentUser, taskId))
-            throw new AuthenticationFailedException("User doesn't have rights to change this task");
+            throw new AuthorizationFailedException("User doesn't have rights to change this task");
 
         return taskService.updateTask(task, taskId);
     }
@@ -75,7 +79,7 @@ public class TaskRestController {
             @AuthenticationPrincipal User currentUser
     ) {
         if (!taskService.userHasTask(currentUser, taskId))
-            throw new AuthenticationFailedException("User doesn't have rights to delete this task");
+            throw new AuthorizationFailedException("User doesn't have rights to delete this task");
 
         return taskService.deleteTaskById(taskId);
     }

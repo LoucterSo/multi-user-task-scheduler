@@ -2,7 +2,7 @@ package io.github.LoucterSo.task_tracker_scheduler.service;
 
 import io.github.LoucterSo.task_tracker_scheduler.form.email.EmailDto;
 import io.github.LoucterSo.task_tracker_scheduler.form.task.TaskDto;
-import io.github.LoucterSo.task_tracker_scheduler.form.user.UserDto;
+import io.github.LoucterSo.task_tracker_scheduler.form.user.UserWithTasksDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +21,10 @@ public class EmailService {
     private static final String TEXT_FOR_DONE_TASKS_TITLE = "Good night, %s %s!%nToday you've done %d tasks:%n%s";
     private static final String TEXT_FOR_NOT_DONE_TASKS = "Good night, %s %s!%nYou've got %d unfinished tasks:%n%s";
 
-    public List<EmailDto> analyzeTasks(List<UserDto> users) {
+    public List<EmailDto> analyzeTasks(List<UserWithTasksDto> users) {
         List<EmailDto> emailsToSend = new ArrayList<>();
 
-        for (UserDto user : users) {
+        for (UserWithTasksDto user : users) {
             Set<TaskDto> tasks = user.tasks();
             if (tasks.isEmpty()) continue;
 
@@ -53,7 +53,7 @@ public class EmailService {
         return emailsToSend;
     }
 
-    private EmailDto createEmail(UserDto user, List<TaskDto> tasks, String subjectTemplate, String textTemplate) {
+    private EmailDto createEmail(UserWithTasksDto user, List<TaskDto> tasks, String subjectTemplate, String textTemplate) {
         String header = subjectTemplate.formatted(tasks.size());
         String tasksToDisplay = createTasksToDisplay(tasks);
         String text = textTemplate.formatted(user.firstName(), user.lastName(), tasks.size(), tasksToDisplay);

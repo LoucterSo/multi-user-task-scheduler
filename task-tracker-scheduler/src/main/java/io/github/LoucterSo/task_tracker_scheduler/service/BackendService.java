@@ -2,7 +2,7 @@ package io.github.LoucterSo.task_tracker_scheduler.service;
 
 import io.github.LoucterSo.task_tracker_scheduler.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_scheduler.form.auth.LoginForm;
-import io.github.LoucterSo.task_tracker_scheduler.form.user.UserDto;
+import io.github.LoucterSo.task_tracker_scheduler.form.user.UserWithTasksDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -31,8 +31,8 @@ public class BackendService {
         return authResponse.getBody().accessToken();
     }
 
-    public List<UserDto> getUsersWithTasks(String accessToken) {
-        ResponseEntity<List<UserDto>> usersResponse =
+    public List<UserWithTasksDto> getUsersWithTasks(String accessToken) {
+        ResponseEntity<List<UserWithTasksDto>> usersResponse =
                 backendFeignClient.getUsersWithTasks("Bearer " + accessToken);
 
         if (!usersResponse.getStatusCode().is2xxSuccessful() || usersResponse.getBody() == null) {
@@ -48,7 +48,7 @@ public class BackendService {
         ResponseEntity<AuthResponseForm> login(@RequestBody LoginForm loginForm);
 
         @GetMapping("/api/v1/users")
-        ResponseEntity<List<UserDto>> getUsersWithTasks(@RequestHeader("Authorization") String token);
+        ResponseEntity<List<UserWithTasksDto>> getUsersWithTasks(@RequestHeader("Authorization") String token);
     }
 
 }

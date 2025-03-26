@@ -2,25 +2,24 @@ package io.github.LoucterSo.task_tracker_backend.api.handler;
 
 import io.github.LoucterSo.task_tracker_backend.exception.*;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthorizationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.RefreshTokenNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.task.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.user.UserAlreadyExists;
+import io.github.LoucterSo.task_tracker_backend.exception.user.UserNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.error.ErrorResponse;
 import io.github.LoucterSo.task_tracker_backend.form.error.ValidationErrorResponse;
 import io.jsonwebtoken.JwtException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @ControllerAdvice @Slf4j
@@ -36,8 +35,16 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    @ExceptionHandler(TaskNotFoundException.class)
-    public ErrorResponse handleNotFoundException(Exception ex) {
+    @ExceptionHandler
+    public ErrorResponse handleTaskNotFoundException(TaskNotFoundException ex) {
+
+        return new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler
+    public ErrorResponse handleUserNotFoundException(UserNotFoundException ex) {
 
         return new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
     }
@@ -65,6 +72,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(new ErrorResponse(ex.getMessage(), System.currentTimeMillis()));
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AuthorizationFailedException.class)
+    public ErrorResponse handleAuthorizationException(AuthorizationFailedException ex) {
+
+        return new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
     }
 
     @ResponseBody
