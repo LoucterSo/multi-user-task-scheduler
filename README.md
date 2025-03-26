@@ -37,7 +37,7 @@
 | **Testing** | JUnit 5, Mockito, Testcontainers |
 
 ## 📊 Database Schema
-![ER Diagram](docs/er-diagram.png)
+![ER Diagram](docs/er-diagram.md)
 
 ## ⚡ Quick Start
 1. Clone repository:
