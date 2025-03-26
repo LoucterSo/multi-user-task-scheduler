@@ -24,8 +24,9 @@ public class TaskRestController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<TaskDto> getUserTasks(@AuthenticationPrincipal User currentUser) {
-
+    public List<TaskDto> getUserTasks(
+            @AuthenticationPrincipal User currentUser
+    ) {
         User userWithTasks = userService.findById(currentUser.getId())
                 .orElseThrow(() -> new UserNotFoundException("Current user not found"));
 
@@ -35,8 +36,10 @@ public class TaskRestController {
     @GetMapping("/{taskId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public TaskDto getUserTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
-
+    public TaskDto getUserTask(
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal User currentUser
+    ) {
         return taskService.getUserTaskById(currentUser, taskId);
     }
 
@@ -67,8 +70,10 @@ public class TaskRestController {
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public TaskDto deleteTask(@PathVariable Long taskId, @AuthenticationPrincipal User currentUser) {
-
+    public TaskDto deleteTask(
+            @PathVariable Long taskId,
+            @AuthenticationPrincipal User currentUser
+    ) {
         if (!taskService.userHasTask(currentUser, taskId))
             throw new AuthenticationFailedException("User doesn't have rights to delete this task");
 
