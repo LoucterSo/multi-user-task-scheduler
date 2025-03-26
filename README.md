@@ -38,10 +38,39 @@
 
 ## 📊 Database Schema
 
-<div align="center">
-  <img src="docs/er-diagram.png" alt="Entity-Relationship Diagram" width="600"/>
-  <p><em>Рисунок 1. ER-диаграмма базы данных (PostgreSQL)</em></p>
-</div>
+```mermaid
+erDiagram
+    users ||--o{ roles : "has"
+    users ||--o{ tasks : "creates"
+    
+    users {
+        bigint user_id PK
+        varchar(255) first_name
+        varchar(255) last_name
+        varchar(255) password
+        varchar(255) email
+        boolean enabled
+        timestamp created_time
+        timestamp updated_time
+    }
+    
+    roles {
+        bigint role_id PK
+        bigint user_id FK
+        varchar(255) role
+    }
+    
+    tasks {
+        bigint task_id PK
+        varchar(255) title
+        varchar(255) description
+        bigint user_id FK
+        boolean done
+        timestamp created_time
+        timestamp updated_time
+        timestamp completion_time
+    }
+```
 
 ## ⚡ Quick Start
 1. Clone repository:
