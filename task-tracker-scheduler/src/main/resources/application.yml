@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: task-tracker-scheduler
+  config:
+    import: "configserver:http://config-server:8888"
+  cloud:
+    config:
+      fail-fast: true
