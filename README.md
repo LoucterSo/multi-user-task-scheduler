@@ -5,6 +5,7 @@
 ## 📌 Table of Contents
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
+- [API Documentation](#-api-documentation)
 - [Database Schema](#-database-schema)
 - [Quick Start](#-quick-start)
 - [Testing](#-testing)
@@ -35,6 +36,10 @@
 | **Infrastructure** | Docker, Docker Compose       |
 | **Build Tool**     | Maven|
 | **Testing** | JUnit 5, Mockito, Testcontainers |
+
+## API Documentation
+
+[![View in Postman](https://img.shields.io/badge/Postman-View_Documentation-FF6C37?logo=postman&logoColor=white)](https://documenter.getpostman.com/view/41252659/2sB2cPjk5v)
 
 ## 📊 Database Schema
 
