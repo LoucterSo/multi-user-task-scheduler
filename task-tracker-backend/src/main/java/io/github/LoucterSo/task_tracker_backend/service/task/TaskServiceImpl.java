@@ -2,7 +2,6 @@ package io.github.LoucterSo.task_tracker_backend.service.task;
 
 import io.github.LoucterSo.task_tracker_backend.entity.task.Task;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
-import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthorizationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.task.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.form.task.TaskDto;
 import io.github.LoucterSo.task_tracker_backend.repository.task.TaskRepository;
