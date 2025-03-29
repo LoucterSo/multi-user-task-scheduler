@@ -1,0 +1,27 @@
+server:
+  port: 8761
+
+spring:
+  main:
+    log-startup-info: false
+    banner-mode: 'off'
+
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+
+logging:
+  level:
+    com.netflix.eureka: OFF
+    com.netflix.discovery: OFF
+    org.springframework.cloud.netflix.eureka: OFF
+    
+    org.springframework.cloud.config: OFF
+    org.springframework.boot.context.config: OFF
+    
+    org.springframework.boot.actuate.health: OFF
+    com.netflix.discovery.shared.transport: OFF
+    
+    org.apache.http: OFF
+    org.springframework.web.client.RestTemplate: OFF

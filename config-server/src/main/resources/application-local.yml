@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: config-server
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/LoucterSo/multi-user-task-scheduler.git
+          search-paths: 'config/{profile}'
+          clone-on-start: true
+          force-pull: true
+          default-label: main
+server:
+  port: 8888
+
+logging:
+  level:
+    com.netflix.eureka: ERROR
+    com.netflix.discovery: ERROR
+    org.springframework.cloud.netflix.eureka: ERROR
+    org.springframework.cloud.client.discovery: ERROR
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+      fetch-registry: true
+      register-with-eureka: true
+

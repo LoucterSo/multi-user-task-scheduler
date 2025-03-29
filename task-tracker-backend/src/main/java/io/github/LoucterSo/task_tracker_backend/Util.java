@@ -9,6 +9,6 @@ public final class Util {
         if (authHeader != null && authHeader.startsWith("Bearer "))
             return Optional.of(authHeader.substring(7));
 
-        else return Optional.empty();
+        return Optional.empty();
     }
 }
