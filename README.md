@@ -76,13 +76,28 @@ erDiagram
 1. Clone repository:
 ```bash
 git clone https://github.com/LoucterSo/multi-user-task-scheduler
-cd multi-user-task-scheduler
-docker-compose -f docker-compose-dev.yaml up --build
+```
+2. Configure environment variables in `docker-compose-dev.yml`:
+```yaml
+environment:
+  SPRING_MAIL_USERNAME: "your_email@example.com"    # Email for sending notifications
+  SPRING_MAIL_PASSWORD: "your_app_password"         # Application password (not your main account password)
+  JWT_SECRET: "your_secure_jwt_secret_here"         # Secret key for JWT tokens
+```
+
+3. Start the application:
+```bash
+docker-compose -f docker-compose-dev.yml up --build
+```
+
+4. Stop the application:
+```bash
+docker-compose -f docker-compose-dev.yml down
 ```
 
 ## 🧪 Testing
 ```bash
-# Unit-tests
+# Unit-tests in a service
 ./mvnw test
 ```
 
@@ -91,12 +106,12 @@ docker-compose -f docker-compose-dev.yaml up --build
 - application-local.yaml
 ### 2. Development mode:
 ```bash
-docker-compose -f docker-compose-dev.yaml up
+docker-compose -f docker-compose-dev.yml up --build
 ```
 ### 3. Production mode:
 *Do not forget to add the .env file with the necessary properties to the root of the project*
 ```bash
-docker-compose -f docker-compose-prod.yaml up
+docker-compose -f docker-compose-prod.yml up --build
 ```
 
 ## 📧 Contacts

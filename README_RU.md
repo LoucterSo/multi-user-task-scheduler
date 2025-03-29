@@ -76,13 +76,26 @@ erDiagram
 1. Клонируйте репозиторий:
 ```bash
 git clone https://github.com/LoucterSo/multi-user-task-scheduler
-cd multi-user-task-scheduler
-docker-compose -f docker-compose-dev.yaml up --build
+```
+2. Настройка окружения в `docker-compose-dev.yml`:
+```yaml
+environment:
+  SPRING_MAIL_USERNAME: "your_email@example.com"    # Email для отправки уведомлений
+  SPRING_MAIL_PASSWORD: "your_app_password"         # Пароль приложения (не аккаунта!)
+  JWT_SECRET: "your_secure_jwt_secret_here"         # Секретный ключ для JWT
+```
+3. Запуск приложения:
+```bash
+docker-compose -f docker-compose-dev.yml up --build
+```
+4. Остановка приложения:
+```bash
+docker-compose -f docker-compose-dev.yml down
 ```
 
 ## 🧪 Тестирование 
 ```bash
-# Unit-tests
+# Unit-tests в сервисе
 ./mvnw test
 ```
 
