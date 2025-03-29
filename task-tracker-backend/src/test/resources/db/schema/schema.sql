@@ -33,3 +33,5 @@ ALTER TABLE roles
 ALTER TABLE tasks
     ADD CONSTRAINT fk_tasks_to_user FOREIGN KEY (user_id)
         REFERENCES users ON UPDATE RESTRICT ON DELETE CASCADE;
+
+CREATE INDEX idx_tasks_user_id ON tasks(user_id);
