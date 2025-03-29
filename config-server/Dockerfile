@@ -6,6 +6,5 @@ RUN --mount=type=cache,target=/root/.m2 mvn -f pom.xml clean package -DskipTests
 
 FROM eclipse-temurin:17-jdk
 WORKDIR /
-COPY --from=build /target/*.jar task-tracker-backend.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "task-tracker-backend.jar"]
+COPY --from=build /target/*.jar config-server.jar
+ENTRYPOINT ["java", "-jar", "config-server.jar"]

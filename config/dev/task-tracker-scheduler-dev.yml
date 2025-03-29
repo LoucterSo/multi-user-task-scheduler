@@ -1,25 +1,7 @@
-hibernate:
-  format_sql: 'false'
-  show_sql: 'false'
-
 spring:
-  application:
-    name: task-tracker-backend
   main:
-    banner-mode: 'off'
     log-startup-info: false
-  jpa:
-    properties:
-      hibernate:
-        format-sql: 'false'
-    hibernate:
-      ddl-auto: validate
-  datasource:
-    url: jdbc:postgresql://postgres:5432/backend
-  liquibase:
-    default-schema: public
-    enabled: true
-    change-log: classpath:/db/changelog/db.changelog-master.json
+    banner-mode: 'off'
   kafka:
     bootstrap-servers: kafka:9092
 
@@ -47,7 +29,4 @@ logging:
         SQL: error
 
 server:
-  servlet:
-    context-path: /api/v1
-  port: '8080'
-
+  port: '8082'

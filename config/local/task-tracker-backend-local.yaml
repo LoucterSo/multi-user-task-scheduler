@@ -3,8 +3,6 @@ hibernate:
   show_sql: 'false'
 
 spring:
-  application:
-    name: task-tracker-backend
   main:
     banner-mode: 'off'
     log-startup-info: false

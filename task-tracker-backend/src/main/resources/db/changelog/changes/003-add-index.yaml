@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: add-index-0
+      author: loucterso
+      comment: "Add index on user_id for better JOIN and DELETE CASCADE performance"
+      changes:
+        - createIndex:
+            indexName: idx_tasks_user_id
+            tableName: tasks
+            columns:
+              - column:
+                  name: user_id
+                  type: BIGINT

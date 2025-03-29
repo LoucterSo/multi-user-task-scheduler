@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: task-tracker-email-sender
   main:
     log-startup-info: false
     banner-mode: 'off'
@@ -38,19 +36,10 @@ eureka:
 
 logging:
   level:
+    org.springframework.mail: DEBUG
     org:
       springframework:
-        web: error
-        security:
-          nodeValue: error
-          web:
-            FilterChainProxy: error
-      hibernate:
-        type:
-          descriptor:
-            sql:
-              BasicBinder: error
-        SQL: error
+        web: DEBUG
 
 server:
   port: '8081'

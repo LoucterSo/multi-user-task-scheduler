@@ -1,0 +1,10 @@
+spring:
+  application:
+    name: task-tracker-email-sender
+  cloud:
+    config:
+      uri: http://config-server:8888
+      fail-fast: true
+      retry:
+        initial-interval: 2000
+        max-attempts: 5
