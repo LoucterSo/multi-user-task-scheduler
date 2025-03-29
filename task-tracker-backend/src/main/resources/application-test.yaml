@@ -11,6 +11,11 @@ spring:
       schema-locations: classpath:db/schema/schema.sql
   liquibase:
     enabled: false
+  cloud:
+    config:
+      import-check:
+        enabled: false
+      enabled: false
 
 scheduler:
   password: 123456789Gg

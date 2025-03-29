@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: task-tracker-scheduler
   main:
     log-startup-info: false
     banner-mode: 'off'

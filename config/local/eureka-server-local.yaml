@@ -2,8 +2,6 @@ server:
   port: 8761
 
 spring:
-  application:
-    name: eureka-server
   main:
     log-startup-info: false
     banner-mode: 'off'

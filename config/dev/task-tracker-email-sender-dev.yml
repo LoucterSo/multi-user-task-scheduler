@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: task-tracker-email-sender
   main:
     log-startup-info: false
     banner-mode: 'off'

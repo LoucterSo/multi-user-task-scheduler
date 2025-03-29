@@ -1,27 +1,32 @@
-hibernate:
-  format_sql: 'false'
-  show_sql: 'false'
-
 spring:
-  application:
-    name: task-tracker-backend
   main:
     log-startup-info: false
     banner-mode: 'off'
-  jpa:
-    properties:
-      hibernate:
-        format-sql: 'false'
-    hibernate:
-      ddl-auto: validate
-  datasource:
-    url: jdbc:postgresql://postgres:5432/backend
   kafka:
     bootstrap-servers: kafka:9092
-  liquibase:
-    default-schema: public
-    enabled: true
-    change-log: classpath:/db/changelog/db.changelog-master.json
+    listener:
+      ack-mode: record
+    consumer:
+      group-id: kafka-core-consumer-group
+      auto-offset-reset: earliest
+    properties:
+      metrics:
+        num:
+          samples: 4
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
 
 eureka:
   client:
@@ -47,6 +52,4 @@ logging:
         SQL: error
 
 server:
-  servlet:
-    context-path: /api/v1
-  port: '8080'
+  port: '8081'
