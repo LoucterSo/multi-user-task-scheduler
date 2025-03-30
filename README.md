@@ -5,7 +5,7 @@
 ## 📌 Table of Contents
 - [Key Features](#-key-features)
 - [Tech Stack](#-tech-stack)
-- [API Documentation](#-api-documentation)
+- [API Documentation](#api-documentation)
 - [Database Schema](#-database-schema)
 - [Quick Start](#-quick-start)
 - [Testing](#-testing)
