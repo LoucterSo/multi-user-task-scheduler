@@ -23,7 +23,7 @@ public class KafkaService {
 
     public void sendWelcomeEmail(String email, String firstName) {
         try {
-            EmailDto emailToSend = new EmailDto(email, WELCOME_HEADER.formatted(firstName), WELCOME_SUBJECT.formatted(firstName, email));
+            EmailDto emailToSend = new EmailDto(email, WELCOME_HEADER.formatted(firstName.trim()), WELCOME_SUBJECT.formatted(firstName, email));
             String json = objectMapper.writeValueAsString(emailToSend);
             kafkaTemplate.send(EMAIL_SENDING_TOPIC, "%d".formatted(new Random().nextInt(0, 3)), json);
         } catch(JsonProcessingException e){

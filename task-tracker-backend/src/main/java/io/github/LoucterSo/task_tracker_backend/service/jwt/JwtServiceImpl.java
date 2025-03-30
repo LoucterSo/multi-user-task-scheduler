@@ -1,8 +1,11 @@
 package io.github.LoucterSo.task_tracker_backend.service.jwt;
 
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
+import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -24,10 +27,19 @@ public class JwtServiceImpl implements JwtService {
     public JwtServiceImpl(
             @Value("${jwt.secret}") String secret,
             @Value("${jwt.access.lifetime}") int expireTimeForAccess,
-            @Value("${jwt.refresh.lifetime}") long expireTimeForRefresh) {
+            @Value("${jwt.refresh.lifetime}") long expireTimeForRefresh
+    ) {
         this.expireTimeForRefresh = expireTimeForRefresh;
         this.expireTimeForAccess = expireTimeForAccess;
         this.signingKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
+    }
+
+    public String verifyToken(String refreshToken) {
+        return getSubjectFromToken(refreshToken)
+                .orElseThrow(() -> {
+                    log.error("Token doesn't have subject");
+                    return new MalformedJwtException("Token doesn't have subject");
+                });
     }
 
     @Override

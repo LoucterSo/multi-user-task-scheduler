@@ -3,6 +3,7 @@ package io.github.LoucterSo.task_tracker_backend.api.handler;
 import io.github.LoucterSo.task_tracker_backend.exception.*;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthorizationFailedException;
+import io.github.LoucterSo.task_tracker_backend.exception.auth.CookiesNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.RefreshTokenNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.task.TaskNotFoundException;
 import io.github.LoucterSo.task_tracker_backend.exception.user.UserAlreadyExists;
@@ -59,6 +60,14 @@ public class GlobalExceptionHandler {
                 errors.put(error.getField(), error.getDefaultMessage()));
 
         return new ValidationErrorResponse(errors, System.currentTimeMillis());
+    }
+
+    @ResponseBody
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler
+    public ErrorResponse handleCookiesNotFoundException(CookiesNotFoundException ex) {
+
+        return new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
     }
 
     @ExceptionHandler(exception =

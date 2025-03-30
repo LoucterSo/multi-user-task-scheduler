@@ -24,6 +24,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import java.io.IOException;
+
 import static io.github.LoucterSo.task_tracker_backend.entity.user.Authority.Roles.*;
 
 @Configuration
@@ -57,21 +59,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         http
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exceptions -> exceptions
-                        .accessDeniedHandler((HttpServletRequest request, HttpServletResponse response,
-                                              AccessDeniedException ex) -> {
-                            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-                            response.setStatus(HttpStatus.FORBIDDEN.value());
-
-                            ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
-                            new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
-                        })
-                )
+                        .accessDeniedHandler(SecurityConfig::handleAccessDeniedException))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(config ->
                         config
@@ -79,9 +72,17 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**").permitAll()
                                 .requestMatchers("/users/current").hasAnyAuthority(USER.name(), ADMIN.name())
                                 .requestMatchers("/users/**").hasAuthority(ADMIN.name())
-                                .anyRequest().hasAnyAuthority(USER.name(), ADMIN.name()))
+                                .anyRequest().permitAll())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    private static void handleAccessDeniedException(HttpServletRequest request, HttpServletResponse response, AccessDeniedException ex) throws IOException {
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.FORBIDDEN.value());
+
+        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage(), System.currentTimeMillis());
+        new ObjectMapper().writeValue(response.getOutputStream(), errorResponse);
     }
 }

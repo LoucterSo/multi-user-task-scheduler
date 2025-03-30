@@ -10,4 +10,5 @@ public interface JwtService {
     String generateRefreshToken(User user);
     Optional<String> getSubjectFromToken(String token);
     Date getExpFromToken(String token);
+    String verifyToken(String token);
 }
