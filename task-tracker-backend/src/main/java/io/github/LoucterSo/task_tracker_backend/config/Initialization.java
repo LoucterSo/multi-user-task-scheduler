@@ -43,7 +43,8 @@ public class Initialization {
 
                 Authority userRole = Authority.builder().role(Authority.Roles.USER).user(scheduler).build();
                 Authority adminRole = Authority.builder().role(Authority.Roles.ADMIN).user(scheduler).build();
-                scheduler.setAuthorities(Set.of(userRole, adminRole));
+                scheduler.addRole(userRole);
+                scheduler.addRole(adminRole);
 
                 userRepository.save(scheduler);
                 authRepository.save(userRole);

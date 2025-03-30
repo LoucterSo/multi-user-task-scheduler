@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table(name = "tasks")
-@Data
+@Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 public class Task {
@@ -31,6 +31,7 @@ public class Task {
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false)
     private User user;
 
+    @Setter(AccessLevel.NONE)
     @Column(name = "done", nullable = false)
     private boolean isDone = false;
 

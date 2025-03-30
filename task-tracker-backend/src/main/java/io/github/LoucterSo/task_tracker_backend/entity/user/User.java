@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data @Builder
+@Builder @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = {"id", "email"})
 public class User implements UserDetails {
@@ -42,6 +42,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Task> tasks = new HashSet<>();
 
+    @Setter(AccessLevel.NONE)
+    @Getter(AccessLevel.NONE)
+    @Builder.Default
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private Set<Authority> authorities = new HashSet<>();
 
@@ -91,14 +94,8 @@ public class User implements UserDetails {
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", password='" + password + '\'' +
                 ", email='" + email + '\'' +
                 ", enabled=" + enabled +
-                ", authorities=" + authorities +
-                ", created=" + created +
-                ", updated=" + updated +
-                '}';
+                ", authorities=" + authorities + '}';
     }
 }

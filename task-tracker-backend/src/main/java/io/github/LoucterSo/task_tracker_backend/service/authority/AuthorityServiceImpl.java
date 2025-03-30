@@ -13,7 +13,7 @@ public class AuthorityServiceImpl implements AuthorityService {
 
     @Override
     public void save(Authority authority) {
-        log.info("Saving authority with role {}", authority.getRole().name());
+        log.info("Saving authority with role {}", authority.getAuthority());
         authorityRepository.save(authority);
     }
 }

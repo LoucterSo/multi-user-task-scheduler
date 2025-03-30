@@ -9,7 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 
 @Entity
 @Table(name = "roles")
-@Data @Builder
+@Builder @Setter
 @NoArgsConstructor @AllArgsConstructor
 @EqualsAndHashCode(of = {"id", "role"})
 public class Authority implements GrantedAuthority {
