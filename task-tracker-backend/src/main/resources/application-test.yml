@@ -1,6 +1,9 @@
 spring:
   main:
     banner-mode: 'off'
+  cloud:
+    config:
+      enabled: false
   datasource:
     url: jdbc:tc:postgresql:16-alpine:///integration-tests-db
     driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
@@ -11,11 +14,6 @@ spring:
       schema-locations: classpath:db/schema/schema.sql
   liquibase:
     enabled: false
-  cloud:
-    config:
-      import-check:
-        enabled: false
-      enabled: false
 
 scheduler:
   password: 123456789Gg

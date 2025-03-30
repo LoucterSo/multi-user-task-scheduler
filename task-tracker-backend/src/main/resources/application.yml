@@ -2,6 +2,8 @@ spring:
   application:
     name: task-tracker-backend
   config:
+    activate:
+      on-profile: "!test"
     import: "configserver:http://config-server:8888"
   cloud:
     config:
