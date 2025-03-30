@@ -1,25 +1,19 @@
 package io.github.LoucterSo.task_tracker_backend.service.auth;
 
-import io.github.LoucterSo.task_tracker_backend.entity.user.Authority;
 import io.github.LoucterSo.task_tracker_backend.entity.user.User;
 import io.github.LoucterSo.task_tracker_backend.exception.auth.AuthenticationFailedException;
-import io.github.LoucterSo.task_tracker_backend.exception.user.UserAlreadyExists;
 import io.github.LoucterSo.task_tracker_backend.form.auth.AuthResponseForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.LoginForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.SignupForm;
 import io.github.LoucterSo.task_tracker_backend.form.auth.TokenPair;
 import io.github.LoucterSo.task_tracker_backend.service.authority.LoginValidator;
-import io.github.LoucterSo.task_tracker_backend.service.authority.AuthorityService;
 import io.github.LoucterSo.task_tracker_backend.service.jwt.JwtService;
 import io.github.LoucterSo.task_tracker_backend.service.kafka.KafkaService;
 import io.github.LoucterSo.task_tracker_backend.service.user.UserService;
-import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service

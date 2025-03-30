@@ -90,7 +90,7 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: 123
-      SCHEDULER_PASSWORD: 123456789Gg
+      SCHEDULER_HASHED_PASSWORD: !SCHEDULER_HASHED_PASSWORD
       SCHEDULER_EMAIL: scheduler@gmail.com
       JWT_REFRESH_LIFETIME: 2592000000
       JWT_ACCESS_LIFETIME: 900000
@@ -110,7 +110,7 @@ services:
       dockerfile: Dockerfile
     environment:
       SPRING_PROFILES_ACTIVE: dev
-      SCHEDULER_PASSWORD: 123456789Gg
+      SCHEDULER_PASSWORD: !SCHEDULER_PASSWORD
       SCHEDULER_EMAIL: scheduler@gmail.com
     depends_on:
       task-tracker-backend:

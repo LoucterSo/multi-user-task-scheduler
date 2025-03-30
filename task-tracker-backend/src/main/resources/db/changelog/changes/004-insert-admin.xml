@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.19.xsd">
+
+    <changeSet id="insert-admin-0" author="loucterso">
+        <insert tableName="users">
+            <column name="first_name" value="admin"/>
+            <column name="last_name" value="scheduler"/>
+            <column name="email" value="${SCHEDULER_EMAIL}"/>
+            <column name="password" value="${SCHEDULER_HASHED_PASSWORD}"/>
+            <column name="enabled" valueBoolean="true"/>
+        </insert>
+
+        <insert tableName="roles">
+            <column name="user_id"
+                    valueComputed="(SELECT user_id FROM users WHERE email = '${SCHEDULER_EMAIL}')"/>
+            <column name="role" value="ADMIN"/>
+        </insert>
+        <insert tableName="roles">
+            <column name="user_id"
+                    valueComputed="(SELECT user_id FROM users WHERE email = '${SCHEDULER_EMAIL}')"/>
+            <column name="role" value="USER"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>

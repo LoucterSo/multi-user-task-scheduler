@@ -14,6 +14,23 @@
         "file": "changes/002-add-constraints.xml",
         "relativeToChangelogFile": "true"
       }
+    },
+
+    {
+      "comment": "Index creation",
+      "include": {
+        "file": "changes/003-add-index.yml",
+        "relativeToChangelogFile": "true"
+      }
+    },
+
+    {
+      "comment": "Initial admin insertion",
+      "include": {
+        "file": "changes/004-insert-admin.xml",
+        "relativeToChangelogFile": "true"
+      }
     }
+
   ]
 }
