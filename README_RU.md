@@ -81,6 +81,7 @@ erDiagram
 1. Клонируйте репозиторий:
 ```bash
 git clone https://github.com/LoucterSo/multi-user-task-scheduler
+cd multi-user-task-scheduler
 ```
 2. Настройка окружения в `docker-compose-dev.yml`:
 ```yaml
@@ -88,6 +89,8 @@ environment:
   SPRING_MAIL_USERNAME: "your_email@example.com"    # Email для отправки уведомлений
   SPRING_MAIL_PASSWORD: "your_app_password"         # Пароль приложения (не аккаунта!)
   JWT_SECRET: "your_secure_jwt_secret_here"         # Секретный ключ для JWT
+  SCHEDULER_PASSWORD: "your_plaintext_password"     # Пароль для scheduler
+  SCHEDULER_HASHED_PASSWORD: "your_bcrypt_hash"     # BCrypt захешированный пароль (12 раундов хеширования) для scheduler
 ```
 3. Запуск приложения:
 ```bash
